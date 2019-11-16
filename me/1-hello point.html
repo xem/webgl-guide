@@ -1,0 +1,48 @@
+<meta charset=utf-8>
+<canvas id="canvas" width=400 height=400></canvas>
+<script>
+// Get the WebGL rendering context
+// The X and Y coordinates are defined between -1.0 and 1.0
+gl = canvas.getContext("webgl");
+
+// Vertex shader:
+// Describes the attributes of points in spaces (position, size, ...)
+// - gl_Position (x, y, z, 1.0)
+// - gl_PointSize
+var vshader = `void main() {
+  gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+  gl_PointSize = 10.0;
+}`;
+
+// Fragment shader:
+// Describes how each pixel rendered by the vertex shader is drawn (color, lighting, ...)
+// - gl_fragColor: vec4(r, g, b, alpha)
+var fshader = `void main() {
+  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}`;
+
+// Make a program from these shaders and use it 
+var vs = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vs, vshader);
+gl.compileShader(vs);
+
+var fs = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fs, fshader);
+gl.compileShader(fs);
+
+var program = gl.createProgram();
+gl.attachShader(program, vs);
+gl.attachShader(program, fs);
+gl.linkProgram(program);
+gl.useProgram(program);
+
+// Clear the canvas's color buffer, in black
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+gl.clear(gl.COLOR_BUFFER_BIT);
+
+// Draw points on the canvas's color buffer
+// - mode: gl.POINTS / LINES / LINE_STRIP / LINE_LOOP / TRIANGLES / TRIANGLE_STRIP / TRIANGLE_FAN
+// - starting point
+// - number of points to draw
+gl.drawArrays(gl.POINTS, 0, 1);
+</script>

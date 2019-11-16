@@ -1,0 +1,71 @@
+<meta charset=utf-8>
+<canvas id="canvas" width=400 height=400></canvas>
+<script>
+gl = canvas.getContext("webgl");
+
+// Vertex shader
+var vshader = `
+attribute vec4 pos;
+attribute float size;
+void main() {
+  gl_Position = pos;
+  gl_PointSize = size;
+}`;
+
+// Fragment shader:
+// 
+var fshader = `
+uniform vec4 color;
+void main() {
+  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}`;
+
+// Compile shaders and program
+var vs = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vs, vshader);
+gl.compileShader(vs);
+var fs = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fs, fshader);
+gl.compileShader(fs);
+var program = gl.createProgram();
+gl.attachShader(program, vs);
+gl.attachShader(program, fs);
+gl.linkProgram(program);
+gl.useProgram(program);
+
+// Get shader attributes
+var pos = gl.getAttribLocation(program, 'pos');
+var size = gl.getAttribLocation(program, 'size');
+
+// Clear
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+gl.clear(gl.COLOR_BUFFER_BIT);
+
+// List of points to draw
+points = [];
+
+// Click listener
+canvas.onclick = e => {
+
+  // Mouse coordinates on canvas
+  var x = e.clientX - canvas.offsetLeft;
+  var y = e.clientY - canvas.offsetTop;
+  
+  // Mouse coordinates in [-1:1] range
+  x = (2 * x / canvas.width) - 1;
+  y = (-2 * y / canvas.height) + 1;
+  
+  // Add point in list
+  points.push([x, y]);
+  
+  // Clear
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  
+  // Draw all points
+  for(i in points){
+    gl.vertexAttrib3f(pos, points[i][0], points[i][1], 0.0);
+    gl.vertexAttrib1f(size, 10.0);
+    gl.drawArrays(gl.POINTS, 0, 1);
+  }
+}
+</script>
