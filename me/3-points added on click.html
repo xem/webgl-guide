@@ -13,11 +13,11 @@ void main() {
 }`;
 
 // Fragment shader:
-// 
 var fshader = `
+precision mediump float;
 uniform vec4 color;
 void main() {
-  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+  gl_FragColor = color;
 }`;
 
 // Compile shaders and program
@@ -36,6 +36,7 @@ gl.useProgram(program);
 // Get shader attributes
 var pos = gl.getAttribLocation(program, 'pos');
 var size = gl.getAttribLocation(program, 'size');
+var color = gl.getUniformLocation(program, 'color');
 
 // Clear
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -56,15 +57,17 @@ canvas.onclick = e => {
   y = (-2 * y / canvas.height) + 1;
   
   // Add point in list
-  points.push([x, y]);
+  points.push([x, y ]);
   
   // Clear
   gl.clear(gl.COLOR_BUFFER_BIT);
   
   // Draw all points
+  // The color is computed using the points coordinates
   for(i in points){
     gl.vertexAttrib3f(pos, points[i][0], points[i][1], 0.0);
     gl.vertexAttrib1f(size, 10.0);
+    gl.uniform4f(color, (points[i][0]+1)/2, (points[i][1]+1)/2, 0.5, 1.0);
     gl.drawArrays(gl.POINTS, 0, 1);
   }
 }

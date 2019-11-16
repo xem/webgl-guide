@@ -5,7 +5,7 @@ gl = canvas.getContext("webgl");
 
 // Vertex shader:
 // an attribute (like pos / size) is a global variable that can be set by JS
-// it's only accessible by the vertex shader
+// only the vertex shader can access it
 var vshader = `
 attribute vec4 pos;
 attribute float size;
@@ -16,7 +16,7 @@ void main() {
 
 // Fragment shader:
 // an uniform (like color) is a global constant that can be set by JS
-// all shaders can access it
+// all shaders can read it
 var fshader = `
 precision mediump float;
 uniform vec4 color;
@@ -39,7 +39,7 @@ gl.useProgram(program);
 
 // Select the pos attribute and set its value
 // we use vertexAttrib3f to only set the values we care about in pos (x, y, z)
-// the default values of a vec4 attribute are: (x, 0.0, 0.0, 1.0)
+// the default values of a vec4 attribute are: (0.0, 0.0, 0.0, 1.0)
 // so all these forms are equivalent:
 // - gl.vertexAttrib1f(pos, 0.0)
 // - gl.vertexAttrib2f(pos, 0.0, 0.0)
@@ -50,12 +50,11 @@ gl.vertexAttrib3f(pos, 0.0, 0.0, 0.0);
 
 // Select the size attribute and set its value
 var size = gl.getAttribLocation(program, 'size');
+gl.vertexAttrib1f(size, 10.0);
 
 // Select the color uniform and set its value
 var color = gl.getUniformLocation(program, "color");
 gl.uniform4f(color, 1.0, 0.0, 0.0, 1.0);
-
-gl.vertexAttrib1f(size, 10.0);
 
 // Render
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
