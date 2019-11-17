@@ -1,6 +1,7 @@
 <canvas id="canvas" width=400 height=400></canvas>
+<p>Click anywhere to add a point
 <script>
-gl = canvas.getContext("webgl");
+var gl = canvas.getContext("webgl");
 
 // Vertex shader
 var vshader = `
@@ -32,7 +33,7 @@ gl.attachShader(program, fs);
 gl.linkProgram(program);
 gl.useProgram(program);
 
-// Get shader attributes
+// Get shaders attributes and uniforms
 var pos = gl.getAttribLocation(program, 'pos');
 var size = gl.getAttribLocation(program, 'size');
 var color = gl.getUniformLocation(program, 'color');

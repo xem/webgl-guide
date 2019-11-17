@@ -1,0 +1,62 @@
+<canvas id="canvas" width=400 height=400></canvas>
+<script>
+var gl = canvas.getContext("webgl");
+
+// Vertex shader:
+// In triangle mode, pointSize is not necessary
+var vshader = `
+attribute vec4 pos;
+void main() {
+  gl_Position = pos;
+}`;
+
+// Fragment shader:
+var fshader = `
+precision mediump float;
+uniform vec4 color;
+void main() {
+  gl_FragColor = color;
+}`;
+
+// Compile shaders and program
+var vs = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vs, vshader);
+gl.compileShader(vs);
+var fs = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fs, fshader);
+gl.compileShader(fs);
+var program = gl.createProgram();
+gl.attachShader(program, vs);
+gl.attachShader(program, fs);
+gl.linkProgram(program);
+gl.useProgram(program);
+
+// Get shaders attributes and uniforms
+var pos = gl.getAttribLocation(program, 'pos');
+var color = gl.getUniformLocation(program, 'color');
+
+// Set color
+gl.uniform4f(color, 1.0, 0.0, 0.0, 1.0);
+
+// Fill a buffer with pairs of x/y coordinates and pass them to the pos attribute of the vertex shader 
+var vertices = new Float32Array([0, 0.5,   -0.5, -0.5,   0.5, -0.5]);
+var buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+gl.vertexAttribPointer(
+  pos,      // target
+  2,        // size
+  gl.FLOAT, // type
+  false,    // normalize
+  0,        // stride
+  0         // offset
+);
+gl.enableVertexAttribArray(pos);
+
+// Clear canvas
+gl.clearColor(0, 0, 0, 1);
+gl.clear(gl.COLOR_BUFFER_BIT);
+
+// Render
+gl.drawArrays(gl.TRIANGLES, 0, 3); // draw 3 vertices as a triangle
+</script>

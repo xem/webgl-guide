@@ -1,9 +1,9 @@
 <canvas id="canvas" width=400 height=400></canvas>
 <script>
-gl = canvas.getContext("webgl");
+var gl = canvas.getContext("webgl");
 
 // Vertex shader:
-// an attribute (like pos / size) is a global variable that can be set by JS
+// an attribute (like pos / size) is a global variable set by JS
 // only the vertex shader can access it
 var vshader = `
 attribute vec4 pos;
@@ -14,7 +14,7 @@ void main() {
 }`;
 
 // Fragment shader:
-// an uniform (like color) is a global constant that can be set by JS
+// an uniform (like color) is a global constant set by JS
 // all shaders can read it
 var fshader = `
 precision mediump float;

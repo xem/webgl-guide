@@ -2,7 +2,7 @@
 <script>
 // Get the WebGL rendering context
 // The X and Y coordinates are defined between -1.0 and 1.0
-gl = canvas.getContext("webgl");
+var gl = canvas.getContext("webgl");
 
 // Vertex shader:
 // Describes the attributes of points in spaces (position, size, ...)
@@ -15,7 +15,7 @@ void main() {
 }`;
 
 // Fragment shader:
-// Describes how each pixel rendered by the vertex shader is drawn (color, lighting, ...)
+// Describes how each pixel is rendered (color, lighting, ...)
 // - gl_fragColor: vec4(r, g, b, alpha)
 var fshader = `
 precision mediump float;
@@ -42,9 +42,10 @@ gl.useProgram(program);
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
-// Draw points on the canvas's color buffer. The parameters are:
-// - mode: gl.POINTS / LINES / LINE_STRIP / LINE_LOOP / TRIANGLES / TRIANGLE_STRIP / TRIANGLE_FAN
-// - starting point
-// - number of points to draw
-gl.drawArrays(gl.POINTS, 0, 1);
+// Draw points on the canvas's color buffer
+gl.drawArrays(
+  gl.POINTS, // mode
+  0,         // starting point
+  1,         // number of points to draw
+);
 </script>
