@@ -1,0 +1,94 @@
+<canvas id="canvas" width=400 height=400></canvas>
+<script>
+var gl = canvas.getContext("webgl");
+
+// Vertex shader
+var vshader = `
+attribute vec4 pos;
+uniform mat4 translation;
+uniform mat4 rotation;
+uniform mat4 scale;
+void main() {
+  // Translation, then rotation, then scale
+  gl_Position = (scale * (rotation * translation)) * pos;
+}`;
+
+// Fragment shader
+var fshader = `
+precision mediump float;
+uniform vec4 color;
+void main() {
+  gl_FragColor = color;
+}`;
+
+// Compile shaders and program
+var vs = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vs, vshader);
+gl.compileShader(vs);
+var fs = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fs, fshader);
+gl.compileShader(fs);
+var program = gl.createProgram();
+gl.attachShader(program, vs);
+gl.attachShader(program, fs);
+gl.linkProgram(program);
+gl.useProgram(program);
+
+// Get shaders attributes and uniforms
+var pos = gl.getAttribLocation(program, 'pos');
+var color = gl.getUniformLocation(program, 'color');
+var translation = gl.getUniformLocation(program, 'translation');
+var rotation = gl.getUniformLocation(program, 'rotation');
+var scale = gl.getUniformLocation(program, 'scale');
+
+// Set color
+gl.uniform4f(color, 1.0, 0.0, 0.0, 1.0);
+
+// Set pos
+var vertices = new Float32Array([0, 0.5,   -0.5, -0.5,   0.5, -0.5]);
+var buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(pos);
+
+// Set translation matrix (transposed)
+var Tx = .8;
+var Ty = -.6;
+var t_matrix = new Float32Array([
+  1.0, 0.0, 0.0, 0.0,
+  0.0, 1.0, 0.0, 0.0,
+  0.0, 0.0, 1.0, 0.0,
+  Tx, Ty, 0.0, 1.0
+]);
+gl.uniformMatrix4fv(translation, false, t_matrix);
+
+// Set rotation matrix (transposed)
+var B = .7;
+var cosB = Math.cos(B);
+var sinB = Math.sin(B);
+var r_matrix = new Float32Array([
+  cosB,  sinB, 0.0, 0.0,
+  -sinB, cosB, 0.0, 0.0,
+  0.0,   0.0,  1.0, 0.0,
+  0.0,   0.0,  0.0, 1.0
+]);
+gl.uniformMatrix4fv(rotation, false, r_matrix);
+
+// Set scale matrix (transposed)
+var S = .4;
+var s_matrix = new Float32Array([
+  S,   0.0, 0.0, 0.0,
+  0.0, S,   0.0, 0.0,
+  0.0, 0.0, S,   0.0,
+  0.0, 0.0, 0.0, 1.0
+]);
+gl.uniformMatrix4fv(scale, false, s_matrix);
+
+// Clear canvas
+gl.clearColor(0, 0, 0, 1);
+gl.clear(gl.COLOR_BUFFER_BIT);
+
+// Render
+gl.drawArrays(gl.TRIANGLES, 0, 3);
+</script>
