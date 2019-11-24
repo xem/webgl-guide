@@ -1,0 +1,92 @@
+<canvas id="canvas" width=400 height=400></canvas>
+<script>
+var gl = canvas.getContext("webgl");
+
+// Vertex shader
+var vshader = `
+attribute vec4 pos;
+attribute vec2 texCoord;
+varying vec2 v_texCoord;
+void main() {
+  gl_Position = pos;
+  v_texCoord = texCoord;
+}`;
+
+// Fragment shader
+var fshader = `
+precision mediump float;
+uniform sampler2D sampler;
+varying vec2 v_texCoord;
+void main() {
+  gl_FragColor = texture2D(sampler, v_texCoord);
+}`;
+
+// Compile shaders and program
+var vs = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vs, vshader);
+gl.compileShader(vs);
+var fs = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fs, fshader);
+gl.compileShader(fs);
+var program = gl.createProgram();
+gl.attachShader(program, vs);
+gl.attachShader(program, fs);
+gl.linkProgram(program);
+gl.useProgram(program);
+gl.clearColor(0, 0, 0, 1);
+
+// Buffer (X,Y: vertex coordinates, T,U: texture coordinates)
+var verticesTexCoords = new Float32Array([
+  -0.5, 0.5,  0.0, 1.0,
+  -0.5, -0.5, 0.0, 0.0,
+  0.5,  0.5,  1.0, 1.0,
+  0.5,  -0.5, 1.0, 0.0,
+]);
+
+var n = 4; // vertices (4)
+var FSIZE = verticesTexCoords.BYTES_PER_ELEMENT; // bytes per float (4)
+
+// Create the buffer object
+var vertexTexCoordBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexTexCoordBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, verticesTexCoords, gl.STATIC_DRAW);
+
+// Use every 1st and 2nd float for pos
+var pos = gl.getAttribLocation(program, 'pos');
+gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, FSIZE * 4, 0);
+gl.enableVertexAttribArray(pos);
+
+// Use every 3rd and 4th float for texCoord
+var texCoord = gl.getAttribLocation(program, 'texCoord');
+gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, FSIZE * 4, FSIZE * 2);
+gl.enableVertexAttribArray(texCoord);
+
+// Set a 2D texture
+var texture = gl.createTexture();
+var sampler = gl.getUniformLocation(program, 'sampler');
+var image = new Image();
+image.src = '../book/resources/sky.jpg';
+image.onload = function(){
+
+  // Flip the image's y axis
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+
+  // Enable texture 0
+  gl.activeTexture(gl.TEXTURE0);
+
+  // Set the texture's target (2D or cubemap)
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Stretch/wrap options
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  
+  // Bind image to texture
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+  
+  // Pass texture 0 to the sampler
+  gl.uniform1i(sampler, 0);
+  
+  gl.clear(gl.COLOR_BUFFER_BIT);   // Clear canvas
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
+};
+</script>

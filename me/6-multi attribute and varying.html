@@ -41,7 +41,10 @@ var verticesColors = new Float32Array([
   0.5,  -0.5, 0.0,  0.0,  1.0, 
 ]);
   
-// Retrieve the size of each float in bytes (4)
+// Save the number of vertices (3)
+var n = 3;
+
+// Get the size of each float in bytes (4)
 var FSIZE = verticesColors.BYTES_PER_ELEMENT;
 
 // Create a buffer object
@@ -63,5 +66,5 @@ gl.clearColor(0, 0, 0, 1);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
 // Render
-gl.drawArrays(gl.TRIANGLES, 0, 3);
+gl.drawArrays(gl.TRIANGLES, 0, n);
 </script>
