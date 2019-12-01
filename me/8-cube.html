@@ -1,0 +1,117 @@
+<canvas id="canvas" width=400 height=400></canvas>
+<script src=matrix.js></script>
+<script>
+
+// Convert deg in radians
+deg2rad = angle => Math.PI * angle / 180;
+
+// WebGL canvas context
+var gl = canvas.getContext("webgl");
+
+// Vertex shader
+var vshader = `
+attribute vec4 pos;
+attribute vec4 col;
+uniform mat4 mvp;
+varying vec4 v_Color;
+void main() {
+  gl_Position = mvp * pos;
+  v_Color = col;
+}`;
+
+// Fragment shader
+var fshader = `
+precision mediump float;
+varying vec4 v_Color;
+void main() {
+  gl_FragColor = v_Color;
+}`;
+
+// Compile shaders and program
+var vs = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vs, vshader);
+gl.compileShader(vs);
+var fs = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fs, fshader);
+gl.compileShader(fs);
+var program = gl.createProgram();
+gl.attachShader(program, vs);
+gl.attachShader(program, fs);
+gl.linkProgram(program);
+gl.useProgram(program);
+
+// Create a cube
+//
+//    v6----- v5
+//   /|      /|
+//  v1------v0|
+//  | |     | |
+//  | |v7---|-|v4
+//  |/      |/
+//  v2------v3
+
+var verticesColors = new Float32Array([
+   1.0,  1.0,  1.0,     1.0,  1.0,  1.0,  // v0 White
+  -1.0,  1.0,  1.0,     1.0,  0.0,  1.0,  // v1 Magenta
+  -1.0, -1.0,  1.0,     1.0,  0.0,  0.0,  // v2 Red
+   1.0, -1.0,  1.0,     1.0,  1.0,  0.0,  // v3 Yellow
+   1.0, -1.0, -1.0,     0.0,  1.0,  0.0,  // v4 Green
+   1.0,  1.0, -1.0,     0.0,  1.0,  1.0,  // v5 Cyan
+  -1.0,  1.0, -1.0,     0.0,  0.0,  1.0,  // v6 Blue
+  -1.0, -1.0, -1.0,     0.0,  0.0,  0.0   // v7 Black
+]);
+
+// Indices of the vertices for each triangle
+var indices = new Uint8Array([
+  0, 1, 2,   0, 2, 3,    // front
+  0, 3, 4,   0, 4, 5,    // right
+  0, 5, 6,   0, 6, 1,    // up
+  1, 6, 7,   1, 7, 2,    // left
+  7, 4, 3,   7, 3, 2,    // down
+  4, 7, 6,   4, 6, 5     // back
+]);
+
+// Number of vertices
+var n = 36;
+
+// Create a buffer object for vertices / colors
+var vertexColorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, verticesColors, gl.STATIC_DRAW);
+
+// Create a buffer object for indexes
+var indexBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+// Bytes per float (4)
+var FSIZE = verticesColors.BYTES_PER_ELEMENT;
+
+// Set attributes and uniforms
+var pos = gl.getAttribLocation(program, 'pos');
+gl.vertexAttribPointer(pos, 3, gl.FLOAT, false, FSIZE * 6, 0);
+gl.enableVertexAttribArray(pos);
+var col = gl.getAttribLocation(program, 'col');
+gl.vertexAttribPointer(col, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+gl.enableVertexAttribArray(col);
+var mvp = gl.getUniformLocation(program, 'mvp');
+
+// Set clear color
+gl.clearColor(0, 0, 0, 1);
+
+// Enable 3D depth test
+gl.enable(gl.DEPTH_TEST);
+
+// Set camera perspective and position
+var mvpMatrix = new Float32Array(16);
+perspective(mvpMatrix, {fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
+camera(mvpMatrix, {z: -5});
+
+// Update camera angle and re-render triangles every 16ms
+setInterval(() => {
+  camera(mvpMatrix, {rx: .01, ry: .02, rz: .01});
+  gl.uniformMatrix4fv(mvp, false, mvpMatrix);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+}, 16);
+</script>

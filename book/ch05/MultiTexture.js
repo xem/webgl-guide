@@ -11,9 +11,7 @@ var VSHADER_SOURCE =
 
 // Fragment shader program
 var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
   'precision mediump float;\n' +
-  '#endif\n' +
   'uniform sampler2D u_Sampler0;\n' +
   'uniform sampler2D u_Sampler1;\n' +
   'varying vec2 v_TexCoord;\n' +
