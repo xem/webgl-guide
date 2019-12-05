@@ -42,10 +42,12 @@ camera = (mat, options) => {
   var rz = options.rz;
   
   // translate
-  mat[12] += mat[0] * x + mat[4] * y + mat[8]  * z;
-  mat[13] += mat[1] * x + mat[5] * y + mat[9]  * z;
-  mat[14] += mat[2] * x + mat[6] * y + mat[10] * z;
-  mat[15] += mat[3] * x + mat[7] * y + mat[11] * z;
+  if(x || y || z){
+    mat[12] += mat[0] * x + mat[4] * y + mat[8]  * z;
+    mat[13] += mat[1] * x + mat[5] * y + mat[9]  * z;
+    mat[14] += mat[2] * x + mat[6] * y + mat[10] * z;
+    mat[15] += mat[3] * x + mat[7] * y + mat[11] * z;
+  }
   
   // Rotate
   if(rx) multMat4Mat4(mat, new Float32Array([1, 0, 0, 0, 0, Math.cos(rx), Math.sin(rx), 0, 0, -Math.sin(rx), Math.cos(rx), 0, 0, 0, 0, 1]));

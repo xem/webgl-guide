@@ -1,4 +1,5 @@
 <canvas id="canvas" width=400 height=400></canvas>
+<script src="webgl.js"></script>
 <script>
 var gl = canvas.getContext("webgl");
 
@@ -21,19 +22,8 @@ void main() {
   gl_FragColor = texture2D(sampler, v_texCoord);
 }`;
 
-// Compile shaders and program
-var vs = gl.createShader(gl.VERTEX_SHADER);
-gl.shaderSource(vs, vshader);
-gl.compileShader(vs);
-var fs = gl.createShader(gl.FRAGMENT_SHADER);
-gl.shaderSource(fs, fshader);
-gl.compileShader(fs);
-var program = gl.createProgram();
-gl.attachShader(program, vs);
-gl.attachShader(program, fs);
-gl.linkProgram(program);
-gl.useProgram(program);
-gl.clearColor(0, 0, 0, 1);
+// Compile program
+var program = compile(gl, vshader, fshader);
 
 // Buffer (X,Y: vertex coordinates, T,U: texture coordinates)
 var verticesTexCoords = new Float32Array([
