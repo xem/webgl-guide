@@ -3,15 +3,14 @@
 <script>
 var gl = canvas.getContext("webgl");
 
-// Vertex shader:
-// In triangle mode, pointSize is not necessary
+// Vertex shader
 var vshader = `
 attribute vec4 pos;
 void main() {
   gl_Position = pos;
 }`;
 
-// Fragment shader:
+// Fragment shader
 var fshader = `
 precision mediump float;
 uniform vec4 color;

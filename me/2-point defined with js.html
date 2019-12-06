@@ -3,7 +3,7 @@
 <script>
 var gl = canvas.getContext("webgl");
 
-// Vertex shader:
+// Vertex shader
 var vshader = `
 attribute vec4 pos;
 attribute float size;
@@ -12,7 +12,7 @@ void main() {
   gl_PointSize = size;
 }`;
 
-// Fragment shader:
+// Fragment shader
 var fshader = `
 precision mediump float;
 uniform vec4 color;

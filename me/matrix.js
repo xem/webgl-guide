@@ -23,7 +23,7 @@ perspective = (mat, options) => {
   var s = Math.sin(fovy);
   var rd = 1 / (far - near);
   var ct = Math.cos(fovy) / s;
-  mvpMatrix.set([
+  mat.set([
     ct / aspect, 0, 0, 0, 
     0, ct, 0, 0, 
     0, 0, -(far + near) * rd, -1,
