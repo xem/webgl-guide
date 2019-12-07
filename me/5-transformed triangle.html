@@ -26,7 +26,6 @@ void main() {
 var program = compile(gl, vshader, fshader);
 
 // Get shaders attributes and uniforms
-var pos = gl.getAttribLocation(program, 'pos');
 var color = gl.getUniformLocation(program, 'color');
 var translation = gl.getUniformLocation(program, 'translation');
 var rotation = gl.getUniformLocation(program, 'rotation');
@@ -37,11 +36,7 @@ gl.uniform4f(color, 1.0, 0.0, 0.0, 1.0);
 
 // Set pos
 var vertices = new Float32Array([0, 0.5,   -0.5, -0.5,   0.5, -0.5]);
-var buffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
-gl.enableVertexAttribArray(pos);
+arraybuffer(gl, vertices, program, 'pos', 2, gl.FLOAT);
 
 // Set translation matrix (transposed)
 var Tx = .8;
