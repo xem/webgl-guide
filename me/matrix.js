@@ -54,3 +54,14 @@ camera = (mat, options) => {
   if(ry) multMat4Mat4(mat, new Float32Array([Math.cos(ry), 0, -Math.sin(ry), 0, 0, 1, 0, 0, Math.sin(ry), 0, Math.cos(ry), 0, 0, 0, 0, 1]));
   if(rz) multMat4Mat4(mat, new Float32Array([Math.cos(rz), Math.sin(rz), 0, 0, -Math.sin(rz), Math.cos(rz), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]));
 };
+
+
+// Normalize a vec3
+normalize = vec => {
+  g = Math.hypot(vec[0], vec[1], vec[2]);
+  if(g == 0 || g == 1) return vec;
+  vec[0] /= g;
+  vec[1] /= g; 
+  vec[2] /= g;
+  return vec;
+}
