@@ -51,6 +51,9 @@ var texCoord = gl.getAttribLocation(program, 'texCoord');
 gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, FSIZE * 4, FSIZE * 2);
 gl.enableVertexAttribArray(texCoord);
 
+// Set the clear color
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
 // Set a 2D texture
 var texture = gl.createTexture();
 var sampler = gl.getUniformLocation(program, 'sampler');

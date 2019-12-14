@@ -35,6 +35,9 @@ var color = gl.getUniformLocation(program, 'color');
 // List of points to draw
 points = [];
 
+// Set the clear color
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
 // Click listener
 canvas.onclick = e => {
 

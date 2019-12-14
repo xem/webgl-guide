@@ -85,19 +85,20 @@ gl.enableVertexAttribArray(pos);
 var col = gl.getAttribLocation(program, 'col');
 gl.vertexAttribPointer(col, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
 gl.enableVertexAttribArray(col);
-var mvp = gl.getUniformLocation(program, 'mvp');
 
-// Enable 3D depth test
+// Set the clear color and enable the depth test
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.enable(gl.DEPTH_TEST);
 
 // Set camera perspective and position
+var mvp = gl.getUniformLocation(program, 'mvp');
 var mvpMatrix = new Float32Array(16);
 perspective(mvpMatrix, {fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
-camera(mvpMatrix, {z: -5});
+transform(mvpMatrix, {z: -5});
 
 // Update camera angle and re-render triangles every 16ms
 setInterval(() => {
-  camera(mvpMatrix, {rx: .01, ry: .02, rz: .01});
+  transform(mvpMatrix, {rx: .01, ry: .02, rz: .01});
   gl.uniformMatrix4fv(mvp, false, mvpMatrix);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);

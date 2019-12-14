@@ -20,7 +20,7 @@ var VSHADER_SOURCE =
      // Calculate the color due to ambient reflection
   '  vec3 ambient = u_AmbientLight * a_Color.rgb;\n' +
      // Add the surface colors due to diffuse reflection and ambient reflection
-  '  v_Color = vec4(diffuse + ambient, a_Color.a);\n' + 
+  '  ;\n' + 
   '}\n';
 
 // Fragment shader program

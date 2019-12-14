@@ -52,6 +52,9 @@ var color = gl.getAttribLocation(program, 'color');
 gl.vertexAttribPointer(color, 3, gl.FLOAT, false, FSIZE * 5, FSIZE * 2);
 gl.enableVertexAttribArray(color);
 
+// Set the clear color
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
 // Clear canvas
 gl.clear(gl.COLOR_BUFFER_BIT);
 

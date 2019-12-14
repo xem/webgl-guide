@@ -83,15 +83,15 @@ gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
+var mvp = gl.getUniformLocation(program, 'mvp');
 var mvpMatrix = new Float32Array(16);
 perspective(mvpMatrix, {fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
-camera(mvpMatrix, {z: -5});
-var mvp = gl.getUniformLocation(program, 'mvp');
+transform(mvpMatrix, {z: -5});
 gl.uniformMatrix4fv(mvp, false, mvpMatrix);
 
 // Animate
 setInterval(() => {
-  camera(mvpMatrix, {rx: .01, ry: .02, rz: .01});
+  transform(mvpMatrix, {rx: .01, ry: .02, rz: .01});
   gl.uniformMatrix4fv(mvp, false, mvpMatrix);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);

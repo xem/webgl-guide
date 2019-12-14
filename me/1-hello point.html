@@ -39,14 +39,16 @@ console.log('vertex shader:', gl.getShaderInfoLog(vs) || 'OK');
 console.log('fragment shader:', gl.getShaderInfoLog(fs) || 'OK');
 console.log('program:', gl.getProgramInfoLog(program) || 'OK');
 
-// Clear the canvas's color buffer, in black
+// Set the clear color (black)
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+// Clear the canvas
 gl.clear(gl.COLOR_BUFFER_BIT);
 
-// Draw points on the canvas's color buffer
+// Draw points
 gl.drawArrays(
   gl.POINTS, // mode
   0,         // starting point
-  1,         // number of points to draw
+  1          // number of points to draw
 );
 </script>

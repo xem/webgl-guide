@@ -13,7 +13,6 @@ compile = (gl, vshader, fshader) => {
   console.log('vertex shader:', gl.getShaderInfoLog(vs) || 'OK');
   console.log('fragment shader:', gl.getShaderInfoLog(fs) || 'OK');
   console.log('program:', gl.getProgramInfoLog(program) || 'OK');
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
   return program;
 }
 

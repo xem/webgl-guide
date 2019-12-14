@@ -36,6 +36,9 @@ gl.vertexAttrib1f(size, 10.0);
 var color = gl.getUniformLocation(program, "color");
 gl.uniform4f(color, 1.0, 0.0, 0.0, 1.0);
 
+// Set the clear color
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
 // Render
 gl.clear(gl.COLOR_BUFFER_BIT);
 gl.drawArrays(gl.POINTS, 0, 1);

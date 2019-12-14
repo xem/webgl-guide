@@ -105,12 +105,14 @@ function main() {
 
   // Pass the model matrix to u_ModelMatrix
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+  console.log("mm", modelMatrix.elements);
 
   // Pass the model view projection matrix to u_mvpMatrix
   gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
   // Pass the transformation matrix for normals to u_NormalMatrix
   gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements);
+  console.log("nm", normalMatrix.elements);
 
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

@@ -14,23 +14,50 @@ attribute vec4 pos;
 attribute vec4 col;
 attribute vec4 normal;
 uniform mat4 mvp;
-uniform vec3 lightColor;
-uniform vec3 lightDirection;
+uniform mat4 u_ModelMatrix;  // model matrix
+uniform mat4 u_NormalMatrix; // inversed transposed model matrix
 varying vec4 v_Color;
+varying vec3 v_Normal;
+varying vec3 v_Position;
 void main() {
-  gl_Position = mvp * pos;
-  vec3 normal = normalize(normal.xyz);
-  float nDotL = max(dot(lightDirection, normal), 0.0);
-  vec3 diffuse = lightColor * col.rgb * nDotL;
-  v_Color = vec4(diffuse, 1.0);
+
+  // Apply the model matrix and the camera matrix to the vertex position
+  gl_Position = mvp * u_ModelMatrix * pos;
+  
+  // Set varying position for the fragment shader
+  v_Position = vec3(u_ModelMatrix * pos);
+  
+  // Recompute the face normal
+  v_Normal = normalize(vec3(u_NormalMatrix * normal));
+  
+  v_Color = col;
 }`;
 
 // Fragment shader program
 var fshader = `
 precision mediump float;
+uniform vec3 lightColor;
+uniform vec3 lightPosition;
+uniform vec3 ambientLight;
+varying vec3 v_Normal;
+varying vec3 v_Position;
 varying vec4 v_Color;
 void main() {
-  gl_FragColor = v_Color;
+
+  // Compute direction between the light and the current point
+  vec3 lightDirection = normalize(lightPosition - v_Position);
+  
+  // Compute angle between the normal and that direction
+  float nDotL = max(dot(lightDirection, v_Normal), 0.0);
+  
+  // Compute diffuse light proportional to this angle
+  vec3 diffuse = lightColor * v_Color.rgb * nDotL;
+  
+  // Compute ambient light
+  vec3 ambient = ambientLight * v_Color.rgb;
+  
+  // Compute total light (diffuse + ambient)
+  gl_FragColor = vec4(diffuse + ambient, 1.0);
 }`;
 
 // Compile program
@@ -100,19 +127,40 @@ gl.enable(gl.DEPTH_TEST);
 // Set the camera
 var mvpMatrix = new Float32Array(16);
 perspective(mvpMatrix, {fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
-camera(mvpMatrix, {z: -5, rx: .7, ry: -.8});
+transform(mvpMatrix, {z: -3.5, rx: .5, ry: -.5});
 var mvp = gl.getUniformLocation(program, 'mvp');
 gl.uniformMatrix4fv(mvp, false, mvpMatrix);
 
-// Set the light color (white) and direction
+// Set the point light color and position
 var lightColor = gl.getUniformLocation(program, 'lightColor');
 gl.uniform3f(lightColor, 1.0, 1.0, 1.0);
+var lightPosition = gl.getUniformLocation(program, 'lightPosition');
+gl.uniform3f(lightPosition, 1.5, 1.5, 1.5);
 
-var lightDirection = gl.getUniformLocation(program, 'lightDirection');
-var lightDir = normalize(new Float32Array([0.5, 3.0, 4.0]));
-gl.uniform3fv(lightDirection, lightDir);
+// Set the ambient light color
+var ambientLight = gl.getUniformLocation(program, 'ambientLight');
+gl.uniform3f(ambientLight, 0.1, 0.1, 0.1);
 
-// Render
-gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+var cubeAngle = 0;
+
+// Loop
+setInterval(() => {
+  
+  cubeAngle += .01;
+  
+  // Set the model matrix and the normal matrix (its inverse transpose)
+  var u_ModelMatrix = gl.getUniformLocation(program, 'u_ModelMatrix');
+  var modelMatrix = identity();
+  transform(modelMatrix, {ry: cubeAngle});
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix);
+  
+  var u_NormalMatrix = gl.getUniformLocation(program, 'u_NormalMatrix');
+  var normalMatrix = inverse(modelMatrix);
+  transpose(normalMatrix);
+  gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix);
+
+  // Render
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+}, 16);
 </script>
