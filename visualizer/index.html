@@ -18,7 +18,6 @@ onload=()=>{
   if(location.hash){E.setValue(atob(location.hash.slice(1)));U();}
   else if(location.search){
     fetch(location.search.replace("?url=","../me/")).then(data=>data.text()).then(txt=>E.setValue(txt));
-    E.onkeyup();
     U();
   }
 }
