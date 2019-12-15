@@ -16,7 +16,7 @@ E=CodeMirror.fromTextArea(code,{lineNumbers:true,lineWrapping:true,mode:"htmlmix
 E.on("keyup",()=>{location.hash=btoa(U())})
 onload=()=>{
   if(location.search){
-    fetch(location.search.replace("?url=","../me/")).then(data=>data.text()).then(txt=>E.setValue(txt.replace(/<script.*?kaspersky.*?script>/g,'')),setTimeout(U,200));
+    fetch(location.search.replace("?url=","../me/")).then(data=>data.text()).then(txt=>E.setValue(txt.replace(/<script.*?kaspersky.*?script>/g,'')),setTimeout(U,2000))
   }
   else if(location.hash){E.setValue(atob(location.hash.slice(1)));U();}
 }
