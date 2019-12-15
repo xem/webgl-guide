@@ -16,7 +16,11 @@ attribute vec4 col;
 uniform mat4 mvp;
 varying vec4 v_col;
 void main() {
+
+  // Apply the camera matrix to the vertex position
   gl_Position = mvp * pos;
+  
+  // Set the varying color
   v_col = col;
 }`;
 

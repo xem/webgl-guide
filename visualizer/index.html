@@ -14,5 +14,12 @@
 E=CodeMirror.fromTextArea(code,{lineNumbers:true,lineWrapping:true,mode:"htmlmixed"});
 (U=z=>output.srcdoc=E.getValue())();
 E.on("keyup",()=>{location.hash=btoa(U())})
-onload=()=>{if(location.hash){E.setValue(atob(location.hash.slice(1)));U();}}
+onload=()=>{
+  if(location.hash){E.setValue(atob(location.hash.slice(1)));U();}
+  else if(location.search){
+    fetch(location.search.replace("?url=","../me/")).then(data=>data.text()).then(txt=>E.setValue(txt));
+    E.onkeyup();
+    U();
+  }
+}
 </script>

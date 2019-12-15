@@ -16,21 +16,22 @@ attribute vec4 normal;
 uniform mat4 mvp;
 uniform mat4 u_ModelMatrix;  // model matrix
 uniform mat4 u_NormalMatrix; // inversed transposed model matrix
-varying vec4 v_Color;
-varying vec3 v_Normal;
-varying vec3 v_Position;
+varying vec4 v_col;
+varying vec3 v_normal;
+varying vec3 v_position;
 void main() {
 
   // Apply the model matrix and the camera matrix to the vertex position
   gl_Position = mvp * u_ModelMatrix * pos;
   
   // Set varying position for the fragment shader
-  v_Position = vec3(u_ModelMatrix * pos);
+  v_position = vec3(u_ModelMatrix * pos);
   
   // Recompute the face normal
-  v_Normal = normalize(vec3(u_NormalMatrix * normal));
+  v_normal = normalize(vec3(u_NormalMatrix * normal));
   
-  v_Color = col;
+  // Set the color
+  v_col = col;
 }`;
 
 // Fragment shader program
@@ -39,22 +40,22 @@ precision mediump float;
 uniform vec3 lightColor;
 uniform vec3 lightPosition;
 uniform vec3 ambientLight;
-varying vec3 v_Normal;
-varying vec3 v_Position;
-varying vec4 v_Color;
+varying vec3 v_normal;
+varying vec3 v_position;
+varying vec4 v_col;
 void main() {
 
   // Compute direction between the light and the current point
-  vec3 lightDirection = normalize(lightPosition - v_Position);
+  vec3 lightDirection = normalize(lightPosition - v_position);
   
   // Compute angle between the normal and that direction
-  float nDotL = max(dot(lightDirection, v_Normal), 0.0);
+  float nDotL = max(dot(lightDirection, v_normal), 0.0);
   
   // Compute diffuse light proportional to this angle
-  vec3 diffuse = lightColor * v_Color.rgb * nDotL;
+  vec3 diffuse = lightColor * v_col.rgb * nDotL;
   
   // Compute ambient light
-  vec3 ambient = ambientLight * v_Color.rgb;
+  vec3 ambient = ambientLight * v_col.rgb;
   
   // Compute total light (diffuse + ambient)
   gl_FragColor = vec4(diffuse + ambient, 1.0);
