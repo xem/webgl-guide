@@ -1,6 +1,7 @@
 <canvas id="canvas" width=400 height=400></canvas>
 <script src="../me/webgl.js"></script>
 <script src="../me/matrix.js"></script>
+<script src="../me/shapes.js"></script>
 <script>
 
 // Convert deg in radians
@@ -13,14 +14,14 @@ var vshader = `
 attribute vec4 pos; 
 attribute vec4 col;
 attribute vec3 normal;
-uniform mat4 mvp;
+uniform mat4 camera;
 uniform vec3 lightColor;
 uniform vec3 lightDirection;
 varying vec4 v_col;
 void main() {
 
   // Apply the camera matrix to the vertex position
-  gl_Position = mvp * pos;
+  gl_Position = camera * pos;
   
   // Compute angle between the normal and that direction
   float nDotL = max(dot(lightDirection, normalize(normal)), 0.0);
@@ -43,50 +44,9 @@ void main() {
 // Compile program
 var program = compile(gl, vshader, fshader);
 
-// Create a cube
-//    v6----- v5
-//   /|      /|
-//  v1------v0|
-//  | |     | |
-//  | |v7---|-|v4
-//  |/      |/
-//  v2------v3
-
-var vertices = new Float32Array([   // Coordinates
-   1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0, // front
-   1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,   1.0, 1.0,-1.0, // right
-   1.0, 1.0, 1.0,   1.0, 1.0,-1.0,  -1.0, 1.0,-1.0,  -1.0, 1.0, 1.0, // up
-  -1.0, 1.0, 1.0,  -1.0, 1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0,-1.0, 1.0, // left
-  -1.0,-1.0,-1.0,   1.0,-1.0,-1.0,   1.0,-1.0, 1.0,  -1.0,-1.0, 1.0, // down
-   1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0  // back
-]);
-
-var colors = new Float32Array([    // Colors (red)
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // front
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // right
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // up
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // left
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // down
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // back
-]);
-
-var normals = new Float32Array([    // Normal
-  0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // front
-  1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,  // right
-  0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,  // up
- -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  // left
-  0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,  // down
-  0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // back
-]);
-
-var indices = new Uint8Array([
-   0, 1, 2,   0, 2, 3, // front
-   4, 5, 6,   4, 6, 7, // right
-   8, 9,10,   8,10,11, // up
-  12,13,14,  12,14,15, // left
-  16,17,18,  16,18,19, // down
-  20,21,22,  20,22,23  // back
-]);
+// Initialize a cube
+var vertices, colors, normals, indices;
+[vertices, colors, normals, indices] = cube();
 
 var n = 36;
 
@@ -105,11 +65,10 @@ gl.clearColor(0, 0, 0, 1);
 gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
-var mvpMatrix = new Float32Array(16);
-perspective(mvpMatrix, {fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
-transform(mvpMatrix, {z: -5, rx: .7, ry: -.8});
-var mvp = gl.getUniformLocation(program, 'mvp');
-gl.uniformMatrix4fv(mvp, false, mvpMatrix);
+var cameraMatrix = perspective({fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
+transform(cameraMatrix, {z: -5, rx: .7, ry: -.8});
+var camera = gl.getUniformLocation(program, 'camera');
+gl.uniformMatrix4fv(camera, false, cameraMatrix);
 
 // Set the diffuse light color (white) and direction
 var lightColor = gl.getUniformLocation(program, 'lightColor');

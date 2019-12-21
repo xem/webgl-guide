@@ -1,3 +1,4 @@
+// Compile a WebGL program from a vertex shader and a fragment shader
 compile = (gl, vshader, fshader) => {
   var vs = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vs, vshader);
@@ -16,10 +17,28 @@ compile = (gl, vshader, fshader) => {
   return program;
 }
 
+// Bind an array buffer to an attribute and enable it
 arraybuffer = (gl, data, program, attribute, size, type) => {
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
   var a = gl.getAttribLocation(program, attribute);
   gl.vertexAttribPointer(a, size, type, false, 0, 0);
   gl.enableVertexAttribArray(a);
+}
+
+// Draw a box
+drawBox = (gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix) => {
+
+  // Compute mvp matrix
+  g_mvpMatrix.set(viewProjMatrix);
+  g_mvpMatrix.multiply(g_modelMatrix);
+  gl.uniformMatrix4fv(u_MvpMatrix, false, g_mvpMatrix.elements);
+
+  // Compute inverse transform
+  g_normalMatrix.setInverseOf(g_modelMatrix);
+  g_normalMatrix.transpose();
+  gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
+  
+  // Draw
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }

@@ -13,12 +13,12 @@ var gl = canvas.getContext("webgl");
 var vshader = `
 attribute vec4 pos;
 attribute vec4 col;
-uniform mat4 mvp;
+uniform mat4 camera;
 varying vec4 v_col;
 void main() {
 
   // Apply the camera matrix to the vertex position
-  gl_Position = mvp * pos;
+  gl_Position = camera * pos;
   
   // Set the varying color
   v_col = col;
@@ -36,14 +36,6 @@ void main() {
 var program = compile(gl, vshader, fshader);
 
 // Create a cube
-//    v6----- v5
-//   /|      /|
-//  v1------v0|
-//  | |     | |
-//  | |v7---|-|v4
-//  |/      |/
-//  v2------v3
-
 var vertices = new Float32Array([  // Vertex coordinates
    1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0, // front
    1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,   1.0, 1.0,-1.0, // right
@@ -63,9 +55,9 @@ var colors = new Float32Array([  // Colors
 ]);
 
 var indices = new Uint8Array([  // Indices
-   0, 1, 2,   0, 2, 3, // front
-   4, 5, 6,   4, 6, 7, // right
-   8, 9,10,   8,10,11, // up
+  0, 1, 2,   0, 2, 3,  // front
+  4, 5, 6,   4, 6, 7,  // right
+  8, 9, 10,  8, 10,11, // up
   12,13,14,  12,14,15, // left
   16,17,18,  16,18,19, // down
   20,21,22,  20,22,23  // back
@@ -87,16 +79,15 @@ gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
-var mvp = gl.getUniformLocation(program, 'mvp');
-var mvpMatrix = new Float32Array(16);
-perspective(mvpMatrix, {fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
-transform(mvpMatrix, {z: -5});
-gl.uniformMatrix4fv(mvp, false, mvpMatrix);
+var camera = gl.getUniformLocation(program, 'camera');
+var cameraMatrix = perspective({fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
+transform(cameraMatrix, {z: -5});
+gl.uniformMatrix4fv(camera, false, cameraMatrix);
 
 // Animate
 setInterval(() => {
-  transform(mvpMatrix, {rx: .01, ry: .02, rz: .01});
-  gl.uniformMatrix4fv(mvp, false, mvpMatrix);
+  transform(cameraMatrix, {rx: .01, ry: .02, rz: .01});
+  gl.uniformMatrix4fv(camera, false, cameraMatrix);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }, 16);

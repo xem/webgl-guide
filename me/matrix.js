@@ -8,24 +8,26 @@ identity = () => {
   ]);
 }
 
-// Multiply two mat4
+// Compute the multiplication of two mat4
 multMat4Mat4 = (a, b) => {
   var i, e, a, b, ai0, ai1, ai2, ai3;
+  var c = new Float32Array(16);
   for (i = 0; i < 4; i++) {
     ai0 = a[i];
     ai1 = a[i+4];
     ai2 = a[i+8];
     ai3 = a[i+12];
-    a[i]    = ai0 * b[0]  + ai1 * b[1]  + ai2 * b[2]  + ai3 * b[3];
-    a[i+4]  = ai0 * b[4]  + ai1 * b[5]  + ai2 * b[6]  + ai3 * b[7];
-    a[i+8]  = ai0 * b[8]  + ai1 * b[9]  + ai2 * b[10] + ai3 * b[11];
-    a[i+12] = ai0 * b[12] + ai1 * b[13] + ai2 * b[14] + ai3 * b[15];
+    c[i]    = ai0 * b[0]  + ai1 * b[1]  + ai2 * b[2]  + ai3 * b[3];
+    c[i+4]  = ai0 * b[4]  + ai1 * b[5]  + ai2 * b[6]  + ai3 * b[7];
+    c[i+8]  = ai0 * b[8]  + ai1 * b[9]  + ai2 * b[10] + ai3 * b[11];
+    c[i+12] = ai0 * b[12] + ai1 * b[13] + ai2 * b[14] + ai3 * b[15];
   }
+  return c;
 };
 
-// Set perspective
+// Compute a perspective mat4
 // options: fovy, aspect, near, far
-perspective = (mat, options) => {
+perspective = (options) => {
   var fovy = options.fovy || 1.5;
   var aspect = options.ratio || 1;
   var near = options.near || 1;
@@ -33,7 +35,7 @@ perspective = (mat, options) => {
   var s = Math.sin(fovy);
   var rd = 1 / (far - near);
   var ct = Math.cos(fovy) / s;
-  mat.set([
+  return new Float32Array([
     ct / aspect, 0, 0, 0, 
     0, ct, 0, 0, 
     0, 0, -(far + near) * rd, -1,
@@ -42,11 +44,16 @@ perspective = (mat, options) => {
 }
 
 // Transform a mat4
-// options: x/y/z (translate), rx/ry/rz (rotate), scale(todo)
+// options: x/y/z (translate), rx/ry/rz (rotate), sx/sy/sz (scale)
 transform = (mat, options) => {
   var x = options.x || 0;
   var y = options.y || 0;
   var z = options.z || 0;
+  
+  var sx = options.sx || 1;
+  var sy = options.sy || 1;
+  var sz = options.sz || 1;
+  
   var rx = options.rx;
   var ry = options.ry;
   var rz = options.rz;
@@ -60,14 +67,34 @@ transform = (mat, options) => {
   }
   
   // Rotate
-  if(rx) multMat4Mat4(mat, new Float32Array([1, 0, 0, 0, 0, Math.cos(rx), Math.sin(rx), 0, 0, -Math.sin(rx), Math.cos(rx), 0, 0, 0, 0, 1]));
-  if(ry) multMat4Mat4(mat, new Float32Array([Math.cos(ry), 0, -Math.sin(ry), 0, 0, 1, 0, 0, Math.sin(ry), 0, Math.cos(ry), 0, 0, 0, 0, 1]));
-  if(rz) multMat4Mat4(mat, new Float32Array([Math.cos(rz), Math.sin(rz), 0, 0, -Math.sin(rz), Math.cos(rz), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]));
+  if(rx) mat.set(multMat4Mat4(mat, new Float32Array([1, 0, 0, 0, 0, Math.cos(rx), Math.sin(rx), 0, 0, -Math.sin(rx), Math.cos(rx), 0, 0, 0, 0, 1])));
+  if(ry) mat.set(multMat4Mat4(mat, new Float32Array([Math.cos(ry), 0, -Math.sin(ry), 0, 0, 1, 0, 0, Math.sin(ry), 0, Math.cos(ry), 0, 0, 0, 0, 1])));
+  if(rz) mat.set(multMat4Mat4(mat, new Float32Array([Math.cos(rz), Math.sin(rz), 0, 0, -Math.sin(rz), Math.cos(rz), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])));
+  
+  // Scale
+  if(sx !== 1){
+    mat[0] *= x;  
+    mat[1] *= x;
+    mat[2] *= x;
+    mat[3] *= x;
+  }
+  if(sy !== 1){
+    mat[4] *= y;
+    mat[5] *= y;
+    mat[6] *= y;
+    mat[7] *= y;
+  }
+  if(sz !== 1){
+    mat[8] *= z;
+    mat[9] *= z;
+    mat[10] *= z;
+    mat[11] *= z;
+  }
 };
 
-// Transpose a mat4
+// Get the transposed of a mat4
 transpose = m => {
-  m.set([
+  return new Float32Array([
     m[0], m[4], m[8],  m[12],
     m[1], m[5], m[9],  m[13],
     m[2], m[6], m[10], m[14],
@@ -104,7 +131,6 @@ inverse = m => {
   }
   return inv;
 }
-
 
 // Normalize a vec3
 normalize = vec => {

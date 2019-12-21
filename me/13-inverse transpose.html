@@ -1,6 +1,7 @@
 <canvas id="canvas" width=400 height=400></canvas>
 <script src="../me/webgl.js"></script>
 <script src="../me/matrix.js"></script>
+<script src="../me/shapes.js"></script>
 <script>
 
 // Convert deg in radians
@@ -14,21 +15,21 @@ attribute vec4 pos;
 attribute vec4 col;
 attribute vec4 normal;
 uniform mat4 mvp;
-uniform mat4 u_ModelMatrix;  // model matrix
-uniform mat4 u_NormalMatrix; // inversed transposed model matrix
+uniform mat4 model;            // model matrix
+uniform mat4 inverseTranspose; // inversed transposed model matrix
 varying vec4 v_col;
 varying vec3 v_normal;
 varying vec3 v_position;
 void main() {
 
   // Apply the model matrix and the camera matrix to the vertex position
-  gl_Position = mvp * u_ModelMatrix * pos;
+  gl_Position = mvp * pos;
   
   // Set varying position for the fragment shader
-  v_position = vec3(u_ModelMatrix * pos);
+  v_position = vec3(model * pos);
   
   // Recompute the face normal
-  v_normal = normalize(vec3(u_NormalMatrix * normal));
+  v_normal = normalize(vec3(inverseTranspose * normal));
   
   // Set the color
   v_col = col;
@@ -64,50 +65,9 @@ void main() {
 // Compile program
 var program = compile(gl, vshader, fshader);
 
-// Create a cube
-//    v6----- v5
-//   /|      /|
-//  v1------v0|
-//  | |     | |
-//  | |v7---|-|v4
-//  |/      |/
-//  v2------v3
-
-var vertices = new Float32Array([   // Coordinates
-   1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0, // front
-   1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,   1.0, 1.0,-1.0, // right
-   1.0, 1.0, 1.0,   1.0, 1.0,-1.0,  -1.0, 1.0,-1.0,  -1.0, 1.0, 1.0, // up
-  -1.0, 1.0, 1.0,  -1.0, 1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0,-1.0, 1.0, // left
-  -1.0,-1.0,-1.0,   1.0,-1.0,-1.0,   1.0,-1.0, 1.0,  -1.0,-1.0, 1.0, // down
-   1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0  // back
-]);
-
-var colors = new Float32Array([    // Colors (red)
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // front
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // right
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // up
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // left
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // down
-  1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // back
-]);
-
-var normals = new Float32Array([    // Normal
-  0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // front
-  1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,  // right
-  0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,  // up
- -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  // left
-  0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,  // down
-  0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // back
-]);
-
-var indices = new Uint8Array([
-   0, 1, 2,   0, 2, 3, // front
-   4, 5, 6,   4, 6, 7, // right
-   8, 9,10,   8,10,11, // up
-  12,13,14,  12,14,15, // left
-  16,17,18,  16,18,19, // down
-  20,21,22,  20,22,23  // back
-]);
+// Initialize a cube
+var vertices, colors, normals, indices;
+[vertices, colors, normals, indices] = cube();
 
 var n = 36;
 
@@ -126,21 +86,24 @@ gl.clearColor(0, 0, 0, 1);
 gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
-var mvpMatrix = new Float32Array(16);
-perspective(mvpMatrix, {fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
-transform(mvpMatrix, {z: -3.5, rx: .5, ry: -.5});
-var mvp = gl.getUniformLocation(program, 'mvp');
-gl.uniformMatrix4fv(mvp, false, mvpMatrix);
+var cameraMatrix = perspective({fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
+transform(cameraMatrix, {z: -3.5, rx: .5, ry: -.5});
 
 // Set the point light color and position
 var lightColor = gl.getUniformLocation(program, 'lightColor');
 gl.uniform3f(lightColor, 1.0, 1.0, 1.0);
+
 var lightPosition = gl.getUniformLocation(program, 'lightPosition');
 gl.uniform3f(lightPosition, 1.5, 1.5, 1.5);
 
 // Set the ambient light color
 var ambientLight = gl.getUniformLocation(program, 'ambientLight');
 gl.uniform3f(ambientLight, 0.1, 0.1, 0.1);
+
+// Get uniforms used in the loop
+var model = gl.getUniformLocation(program, 'model');
+var mvp = gl.getUniformLocation(program, 'mvp');
+var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
 
 var cubeAngle = 0;
 
@@ -149,16 +112,18 @@ setInterval(() => {
   
   cubeAngle += .01;
   
-  // Set the model matrix and the normal matrix (its inverse transpose)
-  var u_ModelMatrix = gl.getUniformLocation(program, 'u_ModelMatrix');
+  // Set the model matrix
   var modelMatrix = identity();
   transform(modelMatrix, {ry: cubeAngle});
-  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix);
+  gl.uniformMatrix4fv(model, false, modelMatrix);
   
-  var u_NormalMatrix = gl.getUniformLocation(program, 'u_NormalMatrix');
-  var normalMatrix = inverse(modelMatrix);
-  transpose(normalMatrix);
-  gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix);
+  // Set the cube's mvp matrix (camera x model)
+  var mvpMatrix = multMat4Mat4(cameraMatrix, modelMatrix);
+  gl.uniformMatrix4fv(mvp, false, mvpMatrix);
+  
+  // Set the inverse transpose of the model matrix
+  var inverseTransposeMatrix = transpose(inverse(modelMatrix));
+  gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix);
 
   // Render
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
