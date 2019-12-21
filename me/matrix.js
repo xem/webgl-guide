@@ -73,22 +73,22 @@ transform = (mat, options) => {
   
   // Scale
   if(sx !== 1){
-    mat[0] *= x;  
-    mat[1] *= x;
-    mat[2] *= x;
-    mat[3] *= x;
+    mat[0] *= sx;  
+    mat[1] *= sx;
+    mat[2] *= sx;
+    mat[3] *= sx;
   }
   if(sy !== 1){
-    mat[4] *= y;
-    mat[5] *= y;
-    mat[6] *= y;
-    mat[7] *= y;
+    mat[4] *= sy;
+    mat[5] *= sy;
+    mat[6] *= sy;
+    mat[7] *= sy;
   }
   if(sz !== 1){
-    mat[8] *= z;
-    mat[9] *= z;
-    mat[10] *= z;
-    mat[11] *= z;
+    mat[8] *= sz;
+    mat[9] *= sz;
+    mat[10] *= sz;
+    mat[11] *= sz;
   }
 };
 
@@ -132,7 +132,7 @@ inverse = m => {
   return inv;
 }
 
-// Normalize a vec3
+/*// Normalize a vec3
 normalize = vec => {
   g = Math.hypot(vec[0], vec[1], vec[2]);
   if(g == 0 || g == 1) return vec;
@@ -140,4 +140,4 @@ normalize = vec => {
   vec[1] /= g; 
   vec[2] /= g;
   return vec;
-}
+}*/
