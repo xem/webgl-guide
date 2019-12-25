@@ -14,6 +14,7 @@
 E=CodeMirror.fromTextArea(code,{lineNumbers:true,lineWrapping:true,mode:"htmlmixed"});
 (U=z=>output.srcdoc=E.getValue())();
 E.on("keyup",()=>{location.hash=btoa(U())})
+var id = null, url = null;
 onload=()=>{
   if(location.search){
     output.srcdoc="loading...";
@@ -28,13 +29,12 @@ onload=()=>{
   else if(location.hash){E.setValue(atob(location.hash.slice(1)));U();}
 }
 
-top.onscroll = () => {
-  console.log(top.scrollY);
+top.addEventListener("scroll", () => {
   if(id){
-    console.log(top[id].offsetTop);
-    if(top.scrollY > top[id].offsetTop){
+    console.log(id, top.scrollY, top[id].offsetTop);
+    if(top.scrollY > top[id].offsetTop && top.scrollY < top[id].offsetTop + top[id].offsetHeight - 420){
       output.style.top = top.scrollY - top[id].offsetTop + "px";
     }
   }
-};
+});
 </script>
