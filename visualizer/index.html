@@ -31,7 +31,6 @@ onload=()=>{
 
 top.addEventListener("scroll", () => {
   if(id){
-    console.log(id, top.scrollY, top[id].offsetTop);
     if(top.scrollY > top[id].offsetTop && top.scrollY < top[id].offsetTop + top[id].offsetHeight - 420){
       output.style.top = top.scrollY - top[id].offsetTop + "px";
     }
