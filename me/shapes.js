@@ -9,7 +9,7 @@
 //  |/      |/
 //  v2------v3
 
-cube = () => {
+cube = (r = 1, g = 1, b = 1) => {
 
   var vertices = new Float32Array([   // Coordinates
      1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0, // front
@@ -21,12 +21,12 @@ cube = () => {
   ]);
 
   var colors = new Float32Array([    // Colors (red)
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // front
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // right
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // up
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // left
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // down
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0, // back
+    r, g, b,   r, g, b,   r, g, b,  r, g, b, // front
+    r, g, b,   r, g, b,   r, g, b,  r, g, b, // right
+    r, g, b,   r, g, b,   r, g, b,  r, g, b, // up
+    r, g, b,   r, g, b,   r, g, b,  r, g, b, // left
+    r, g, b,   r, g, b,   r, g, b,  r, g, b, // down
+    r, g, b,   r, g, b,   r, g, b,  r, g, b  // back
   ]);
 
   var normals = new Float32Array([    // Normal
@@ -48,4 +48,23 @@ cube = () => {
   ]);
   
   return [vertices, colors, normals, indices];
+}
+
+// Draw the current shape
+drawShape = (gl, program, cameraMatrix, modelMatrix) => {
+  var model = gl.getUniformLocation(program, 'model');
+  gl.uniformMatrix4fv(model, false, modelMatrix);
+
+  // Set the cube's mvp matrix (camera x model)
+  var mvpMatrix = multMat4Mat4(cameraMatrix, modelMatrix);
+  var mvp = gl.getUniformLocation(program, 'mvp');
+  gl.uniformMatrix4fv(mvp, false, mvpMatrix);
+
+  // Set the inverse transpose of the model matrix
+  var inverseTransposeMatrix = transpose(inverse(modelMatrix));
+  var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
+  gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix);
+
+  // Render
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
