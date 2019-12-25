@@ -29,8 +29,9 @@ onload=()=>{
 }
 
 top.onscroll = () => {
-  console.log(1);
+  console.log(top.scrollY);
   if(id){
+    console.log(top[id].offsetTop);
     if(top.scrollY > top[id].offsetTop){
       output.style.top = top.scrollY - top[id].offsetTop + "px";
     }
