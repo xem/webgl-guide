@@ -46,6 +46,9 @@ perspective = (options) => {
 // Transform a mat4
 // options: x/y/z (translate), rx/ry/rz (rotate), sx/sy/sz (scale)
 transform = (mat, options) => {
+  
+  var out = new Float32Array(mat);
+  
   var x = options.x || 0;
   var y = options.y || 0;
   var z = options.z || 0;
@@ -60,36 +63,38 @@ transform = (mat, options) => {
   
   // translate
   if(x || y || z){
-    mat[12] += mat[0] * x + mat[4] * y + mat[8]  * z;
-    mat[13] += mat[1] * x + mat[5] * y + mat[9]  * z;
-    mat[14] += mat[2] * x + mat[6] * y + mat[10] * z;
-    mat[15] += mat[3] * x + mat[7] * y + mat[11] * z;
+    out[12] += out[0] * x + out[4] * y + out[8]  * z;
+    out[13] += out[1] * x + out[5] * y + out[9]  * z;
+    out[14] += out[2] * x + out[6] * y + out[10] * z;
+    out[15] += out[3] * x + out[7] * y + out[11] * z;
   }
   
   // Rotate
-  if(rx) mat.set(multMat4Mat4(mat, new Float32Array([1, 0, 0, 0, 0, Math.cos(rx), Math.sin(rx), 0, 0, -Math.sin(rx), Math.cos(rx), 0, 0, 0, 0, 1])));
-  if(ry) mat.set(multMat4Mat4(mat, new Float32Array([Math.cos(ry), 0, -Math.sin(ry), 0, 0, 1, 0, 0, Math.sin(ry), 0, Math.cos(ry), 0, 0, 0, 0, 1])));
-  if(rz) mat.set(multMat4Mat4(mat, new Float32Array([Math.cos(rz), Math.sin(rz), 0, 0, -Math.sin(rz), Math.cos(rz), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])));
+  if(rx) out.set(multMat4Mat4(out, new Float32Array([1, 0, 0, 0, 0, Math.cos(rx), Math.sin(rx), 0, 0, -Math.sin(rx), Math.cos(rx), 0, 0, 0, 0, 1])));
+  if(ry) out.set(multMat4Mat4(out, new Float32Array([Math.cos(ry), 0, -Math.sin(ry), 0, 0, 1, 0, 0, Math.sin(ry), 0, Math.cos(ry), 0, 0, 0, 0, 1])));
+  if(rz) out.set(multMat4Mat4(out, new Float32Array([Math.cos(rz), Math.sin(rz), 0, 0, -Math.sin(rz), Math.cos(rz), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])));
   
   // Scale
   if(sx !== 1){
-    mat[0] *= sx;  
-    mat[1] *= sx;
-    mat[2] *= sx;
-    mat[3] *= sx;
+    out[0] *= sx;  
+    out[1] *= sx;
+    out[2] *= sx;
+    out[3] *= sx;
   }
   if(sy !== 1){
-    mat[4] *= sy;
-    mat[5] *= sy;
-    mat[6] *= sy;
-    mat[7] *= sy;
+    out[4] *= sy;
+    out[5] *= sy;
+    out[6] *= sy;
+    out[7] *= sy;
   }
   if(sz !== 1){
-    mat[8] *= sz;
-    mat[9] *= sz;
-    mat[10] *= sz;
-    mat[11] *= sz;
+    out[8] *= sz;
+    out[9] *= sz;
+    out[10] *= sz;
+    out[11] *= sz;
   }
+  
+  return out;
 };
 
 // Get the transposed of a mat4

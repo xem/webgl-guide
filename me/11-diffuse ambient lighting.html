@@ -70,7 +70,7 @@ gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
 var cameraMatrix = perspective({fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
-transform(cameraMatrix, {z: -5, rx: .7, ry: -.8});
+cameraMatrix = transform(cameraMatrix, {z: -5, rx: .7, ry: -.8});
 var camera = gl.getUniformLocation(program, 'camera');
 gl.uniformMatrix4fv(camera, false, cameraMatrix);
 

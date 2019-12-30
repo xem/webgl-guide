@@ -97,11 +97,11 @@ gl.enable(gl.DEPTH_TEST);
 // Set camera perspective and position
 var camera = gl.getUniformLocation(program, 'camera');
 var cameraMatrix = perspective({fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
-transform(cameraMatrix, {z: -5});
+cameraMatrix = transform(cameraMatrix, {z: -5});
 
 // Update camera angle and re-render triangles every 16ms
 setInterval(() => {
-  transform(cameraMatrix, {rx: .01, ry: .02, rz: .01});
+  cameraMatrix = transform(cameraMatrix, {rx: .01, ry: .02, rz: .01});
   gl.uniformMatrix4fv(camera, false, cameraMatrix);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);

@@ -87,7 +87,7 @@ gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
 var cameraMatrix = perspective({fovy: deg2rad(30), aspect: 1, near: 1, far: 100});
-transform(cameraMatrix, {z: -3.5, rx: .5, ry: -.5});
+cameraMatrix = transform(cameraMatrix, {z: -3.5, rx: .5, ry: -.5});
 
 // Set the point light color and position
 var lightColor = gl.getUniformLocation(program, 'lightColor');
@@ -114,7 +114,7 @@ setInterval(() => {
   
   // Set the model matrix
   var modelMatrix = identity();
-  transform(modelMatrix, {ry: cubeAngle});
+  modelMatrix = transform(modelMatrix, {ry: cubeAngle});
   gl.uniformMatrix4fv(model, false, modelMatrix);
   
   // Set the cube's mvp matrix (camera x model)

@@ -21,12 +21,12 @@ cube = (r = 1, g = 1, b = 1) => {
   ]);
 
   var colors = new Float32Array([    // Colors (red)
-    r, g, b,   r, g, b,   r, g, b,  r, g, b, // front
-    r, g, b,   r, g, b,   r, g, b,  r, g, b, // right
-    r, g, b,   r, g, b,   r, g, b,  r, g, b, // up
-    r, g, b,   r, g, b,   r, g, b,  r, g, b, // left
-    r, g, b,   r, g, b,   r, g, b,  r, g, b, // down
-    r, g, b,   r, g, b,   r, g, b,  r, g, b  // back
+    r, g, b,  r, g, b,  r, g, b,  r, g, b, // front
+    r, g, b,  r, g, b,  r, g, b,  r, g, b, // right
+    r, g, b,  r, g, b,  r, g, b,  r, g, b, // up
+    r, g, b,  r, g, b,  r, g, b,  r, g, b, // left
+    r, g, b,  r, g, b,  r, g, b,  r, g, b, // down
+    r, g, b,  r, g, b,  r, g, b,  r, g, b  // back
   ]);
 
   var normals = new Float32Array([    // Normal
@@ -51,8 +51,11 @@ cube = (r = 1, g = 1, b = 1) => {
 }
 
 // Draw the current shape
-drawShape = (gl, program, cameraMatrix, modelMatrix) => {
+drawShape = (gl, program, cameraMatrix, modelMatrix, sx = 1, sy = 1, sz = 1) => {
+  
+  // Set the model matrix (add the custom scale if any)
   var model = gl.getUniformLocation(program, 'model');
+  modelMatrix = transform(modelMatrix, {sx, sy, sz});
   gl.uniformMatrix4fv(model, false, modelMatrix);
 
   // Set the cube's mvp matrix (camera x model)
