@@ -134,7 +134,7 @@ drawArm = (gl, n, cameraMatrix) => {
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // Elbow
+  // Shoukder
   var modelMatrix = identity();
   modelMatrix = transform(modelMatrix, {x: -3});
   drawShape(gl, program, cameraMatrix, modelMatrix, 2, 1, 1);

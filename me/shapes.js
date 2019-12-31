@@ -48,7 +48,7 @@ cube = (r = 1, g = 1, b = 1) => {
   ]);
   
   return [vertices, colors, normals, indices];
-}
+};
 
 // Draw the current shape
 drawShape = (gl, program, cameraMatrix, modelMatrix, sx = 1, sy = 1, sz = 1) => {
@@ -70,4 +70,4 @@ drawShape = (gl, program, cameraMatrix, modelMatrix, sx = 1, sy = 1, sz = 1) => 
 
   // Render
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
-}
+};

@@ -6,7 +6,7 @@ identity = () => {
     0, 0, 1, 0,
     0, 0, 0, 1
   ]);
-}
+};
 
 // Compute the multiplication of two mat4
 multMat4Mat4 = (a, b) => {
@@ -41,7 +41,7 @@ perspective = (options) => {
     0, 0, -(far + near) * rd, -1,
     0, 0, -2 * near * far * rd, 0
   ]);
-}
+};
 
 // Transform a mat4
 // options: x/y/z (translate), rx/ry/rz (rotate), sx/sy/sz (scale)
@@ -105,7 +105,7 @@ transpose = m => {
     m[2], m[6], m[10], m[14],
     m[3], m[7], m[11], m[15]
   ]);
-}
+};
 
 // Get the inverse of a mat4
 // The mat4 is not modified, a new mat4 is returned
@@ -135,7 +135,7 @@ inverse = m => {
     inv[i] *= det;
   }
   return inv;
-}
+};
 
 /*// Normalize a vec3
 normalize = vec => {
