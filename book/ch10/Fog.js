@@ -37,7 +37,7 @@ function main() {
   var canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
-  var gl = getWebGLContext(canvas);
+  gl = getWebGLContext(canvas);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
@@ -50,7 +50,7 @@ function main() {
   }
 
   // 
-  var n = initVertexBuffers(gl);
+  n = initVertexBuffers(gl);
   if (n < 1) {
     console.log('Failed to set the vertex information');
     return;
@@ -59,7 +59,7 @@ function main() {
   // Color of Fog
   var fogColor = new Float32Array([0.137, 0.231, 0.423]);
   // Distance of fog [where fog starts, where fog completely covers object]
-  var fogDist = new Float32Array([55, 80]);
+  fogDist = new Float32Array([55, 80]);
   // Position of eye point (world coordinates)
   var eye = new Float32Array([25, 65, 35, 1.0]);
 
@@ -68,7 +68,7 @@ function main() {
   var u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
   var u_Eye = gl.getUniformLocation(gl.program, 'u_Eye');
   var u_FogColor = gl.getUniformLocation(gl.program, 'u_FogColor');
-  var u_FogDist = gl.getUniformLocation(gl.program, 'u_FogDist');
+  u_FogDist = gl.getUniformLocation(gl.program, 'u_FogDist');
   if (!u_MvpMatrix || !u_ModelMatrix || !u_Eye || !u_FogColor || !u_FogDist) {
     console.log('Failed to get the storage location');
     return;
@@ -126,6 +126,27 @@ function keydown(ev, gl, n, u_FogDist, fogDist) {
   // Draw
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
+
+far.onclick = () => {
+  fogDist[1]  += 1;
+  
+  gl.uniform2fv(u_FogDist, fogDist);   // Pass the distance of fog
+  // Clear color and depth buffer
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  // Draw
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+}
+
+near.onclick = () => {
+  if (fogDist[1] > fogDist[0]) fogDist[1] -= 1;
+  
+  gl.uniform2fv(u_FogDist, fogDist);   // Pass the distance of fog
+  // Clear color and depth buffer
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  // Draw
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+}
+
 
 function initVertexBuffers(gl) {
   // Create a cube
