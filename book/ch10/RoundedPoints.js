@@ -4,17 +4,15 @@ var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' +
   'void main() {\n' +
   '  gl_Position = a_Position;\n' +
-  '  gl_PointSize = 10.0;\n' +
+  '  gl_PointSize = 30.0;\n' +
   '}\n';
 
 // Fragment shader program
 var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
   'precision mediump float;\n' +
-  '#endif GL_ES\n' +
   'void main() {\n' +    // Center coordinate is (0.5, 0.5)
   '  float d = distance(gl_PointCoord, vec2(0.5, 0.5));\n' +
-  '  if(d < 0.5) {\n' +  // Radius is 0.5
+  '  if(d < .5) {\n' +  // Radius is 2
   '    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
   '  } else { discard; }\n' +
   '}\n';
