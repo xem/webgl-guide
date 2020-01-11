@@ -20,7 +20,7 @@ cube = (r = 1, g = 1, b = 1) => {
      1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0  // back
   ]);
 
-  var colors = new Float32Array([    // Colors (red)
+  var colors = new Float32Array([    // Colors
     r, g, b,  r, g, b,  r, g, b,  r, g, b, // front
     r, g, b,  r, g, b,  r, g, b,  r, g, b, // right
     r, g, b,  r, g, b,  r, g, b,  r, g, b, // up
