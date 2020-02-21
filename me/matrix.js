@@ -137,12 +137,33 @@ inverse = m => {
   return inv;
 };
 
-/*// Normalize a vec3
-normalize = vec => {
-  g = Math.hypot(vec[0], vec[1], vec[2]);
-  if(g == 0 || g == 1) return vec;
-  vec[0] /= g;
-  vec[1] /= g; 
-  vec[2] /= g;
-  return vec;
-}*/
+// lookAt
+// set the position, target and "up" direction of a camera matrix
+lookat = (mat, eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ) => {
+  var e, fx, fy, fz, rlf, sx, sy, sz, rls, ux, uy, uz;
+  fx = centerX - eyeX;
+  fy = centerY - eyeY;
+  fz = centerZ - eyeZ;
+  rlf = 1 / Math.sqrt(fx*fx + fy*fy + fz*fz);
+  fx *= rlf;
+  fy *= rlf;
+  fz *= rlf;
+  sx = fy * upZ - fz * upY;
+  sy = fz * upX - fx * upZ;
+  sz = fx * upY - fy * upX;
+  rls = 1 / Math.sqrt(sx*sx + sy*sy + sz*sz);
+  sx *= rls;
+  sy *= rls;
+  sz *= rls;
+  ux = sy * fz - sz * fy;
+  uy = sz * fx - sx * fz;
+  uz = sx * fy - sy * fx;
+  var l = new Float32Array(
+    sx, ux, -fx, 0,
+    sy, uy, -fy, 0,
+    sz, uz, -fz, 0,
+    0,  0,  0,   1
+  );
+  l = transform(l, {x: -eyeX, y: -eyeY, z: -eyeZ});
+  return multMat4Mat4(mat, l); 
+}
