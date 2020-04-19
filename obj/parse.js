@@ -9,7 +9,7 @@
 // If face normals are not present in the OBJ file, they're computed per face (not smoothed for each vertex) and put in the normals buffer.
 // All the polygons with 4 faces or more are converted in 2 or more consecutive triangles.
 // The object is centered on the origin by default but it can be disabled with center = 0.
-parseOBJ = (objpath, center = 1) => {
+parseOBJ = async (objpath, center = 1) => {
   
   // Temp vars
   var
@@ -22,8 +22,8 @@ parseOBJ = (objpath, center = 1) => {
   mtl = [],       // materials 
   currentvn = [], // current group normals
   obj = [],       // output
-  currentobj = {name: '', groups: []},
-  currentgroup = {name: ''},
+  currentobj = {groups: []},
+  currentgroup = {},
   currentmtl = {},
   currents = 1,
   currentusemtl,
@@ -40,7 +40,7 @@ parseOBJ = (objpath, center = 1) => {
   objlist,
   mtllist,
   normal,
-  xhr,
+  file,
   tmp, i, j,
   A, B, C,
   AB, BC,
@@ -162,7 +162,7 @@ parseOBJ = (objpath, center = 1) => {
     currentobj.groups.push(currentgroup);
     
     // Reset group
-    currentgroup = {name: ''};
+    currentgroup = {};
     
     // Reset indices arrays
     vi = [];
@@ -174,11 +174,10 @@ parseOBJ = (objpath, center = 1) => {
   objfolder = /.*\//.exec(objpath) || '';
   
   // Request OBJ file, remove comments and split lines
-  xhr = new XMLHttpRequest();
-  xhr.open('GET', objpath, !1);
-  xhr.send();
-  objlines = xhr.responseText.replace(/#.*\n*/g,'').split(/[\r\n]+/);
-  
+  file = await(await fetch(objpath)).text();
+  //console.log(file);
+  objlines = file.replace(/#.*\n*/g,'').split(/[\r\n]+/);
+    
   // For each line
   for(objline of objlines){
     
@@ -200,10 +199,9 @@ parseOBJ = (objpath, center = 1) => {
         mtlfolder = /.*\//.exec(objfolder + objparam) || '';
         
         // Request MTL file, remove comments and split lines
-        xhr = new XMLHttpRequest();
-        xhr.open('GET', objfolder + objparam, !1);
-        xhr.send();
-        mtllines = xhr.responseText.replace(/#.*\n*/g,'').split(/[\r\n]+/);
+        file = await(await fetch(objfolder + objparam)).text();
+        mtllines = file.replace(/#.*\n*/g,'').split(/[\r\n]+/);
+        console.log(file);
           
         // For each line
         for(mtlline of mtllines){
@@ -229,7 +227,7 @@ parseOBJ = (objpath, center = 1) => {
               }
               
               // Save material name
-              currentmtl.name = mtlparam || '';
+              currentmtl.name = mtlparam;
               break;
               
             // Ambient/diffuse/specular color
@@ -282,7 +280,7 @@ parseOBJ = (objpath, center = 1) => {
         }
         
         // Save the material name for the current and next groups
-        currentusemtl = objparam || '';
+        currentusemtl = objparam;
         
         break;
       
@@ -297,7 +295,7 @@ parseOBJ = (objpath, center = 1) => {
         }
         
         // Save current object's name
-        currentobj.name = objparam || '';
+        currentobj.name = objparam;
         
         // Initialize groups
         currentobj.groups = [];
@@ -316,7 +314,7 @@ parseOBJ = (objpath, center = 1) => {
         }
         
         // Save current group's name
-        currentgroup.name = objparam || '';
+        currentgroup.name = objparam;
         
         // Reset smoothness to 1
         currents = 1;
@@ -397,6 +395,5 @@ parseOBJ = (objpath, center = 1) => {
   // Push the last group in the current object and the last object in obj
   endGroup();
   obj.push(currentobj);
-  
   return obj;
 }

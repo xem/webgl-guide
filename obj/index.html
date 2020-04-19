@@ -3,12 +3,22 @@
 <script src="../me/webgl.js"></script>
 <script src="../me/matrix.js"></script>
 <script src="../me/shapes.js"></script>
+<script src="view.js"></script>
 <script>
-gl = a.getContext('webgl'),
+var gl = a.getContext('webgl');
 
-z = parseOBJ('yoshi/Obj/Yoshi.obj');
+var file = 'yoshi/Obj/Yoshi.obj';
+
+console.log(parseOBJ(file).then(
+  x => {
+    view(x);
+  }
+));
+
+
+//  x => console.log(x);
+//);
 //z = parseOBJ('mario/Obj/Mario.obj');
 //z = parseOBJ('block/cube.obj',0);
-console.log(z);
+//console.log(z);
 </script>
-<script src="view.js"></script>
