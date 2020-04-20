@@ -154,6 +154,6 @@ view = function(z){
 
     // Render
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.drawArrays(gl.TRIANGLES, 0, z[0].groups[0].v.length);
+    gl.drawArrays(gl.TRIANGLES, 0, z[0].groups[0].v.length/3);
   }, 16);
 }
