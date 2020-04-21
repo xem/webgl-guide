@@ -32,14 +32,13 @@ perspective = (options) => {
   var aspect = options.ratio || 1;
   var near = options.near || 1;
   var far = options.far || 100;
-  var s = Math.sin(fovy);
-  var rd = 1 / (far - near);
-  var ct = Math.cos(fovy) / s;
+  var f = 1 / Math.tan(fovy);
+  var nf = 1 / (near - far);
   return new Float32Array([
-    ct / aspect, 0, 0, 0, 
-    0, ct, 0, 0, 
-    0, 0, -(far + near) * rd, -1,
-    0, 0, -2 * near * far * rd, 0
+    f / aspect, 0, 0, 0, 
+    0, f, 0, 0, 
+    0, 0, (far + near) * nf, -1,
+    0, 0, (2 * near * far) * nf, 0
   ]);
 };
 
