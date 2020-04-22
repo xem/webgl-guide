@@ -11,17 +11,18 @@
 #output { width: 420px; position: fixed; border: none; transition: .1s;}
 </style>
 <script>
+c='';
 E=CodeMirror.fromTextArea(code,{lineNumbers:true,lineWrapping:true,mode:"htmlmixed"});
-(U=z=>output.srcdoc=E.getValue())();
-E.on("keyup",()=>{location.hash=btoa(U())})
+(U=z=>output.srcdoc=c)();
+E.on("keyup",()=>{location.hash=btoa(c=E.getValue());U();})
 var id = null, url = null;
 onload=()=>{
-  if(location.hash){E.setValue(atob(location.hash.slice(1)));U();}
+  if(location.hash){E.setValue(c = atob(location.hash.slice(1)));U();}
   else if(location.search){
     output.srcdoc="loading...";
     [url,rest]=location.search.split("&");
     if(url){
-      fetch(url.replace(/\?demo=(\d+)/,"../$1/index.html")).then(data=>data.text()).then(txt=>E.setValue(txt.replace(/<script.*?kaspersky.*?script>/g,'')),setTimeout(U,500))
+      fetch(url.replace(/\?demo=(\d+)/,"../$1/index.html")).then(data=>data.text()).then(txt=>E.setValue(c=txt.replace(/<script.*?kaspersky.*?script>/g,'')),setTimeout(U,200))
     }
   }
 }
