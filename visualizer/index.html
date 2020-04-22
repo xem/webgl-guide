@@ -22,7 +22,7 @@ onload=()=>{
     output.srcdoc="loading...";
     [url,rest]=location.search.split("&");
     if(url){
-      fetch(url.replace(/\?demo=(\d+)/,"../$1/index.html")).then(data=>data.text()).then(txt=>E.setValue(c=txt.replace(/<script.*?kaspersky.*?script>/g,'')),setTimeout(U,200))
+      fetch(url.replace(/\?demo=(\d+)/,"../$1/index.html")).then(data=>data.text()).then(txt=>E.setValue(c=txt.replace(/<script.*?kaspersky.*?script>/g,'')),setTimeout(U,2000))
     }
   }
 }
