@@ -13,16 +13,17 @@
 <script>
 c='';
 E=CodeMirror.fromTextArea(code,{lineNumbers:true,lineWrapping:true,mode:"htmlmixed"});
-(U=z=>output.srcdoc=c)();
+U=z=>{if(c)output.srcdoc=c};
 E.on("keyup",()=>{location.hash=btoa(c=E.getValue());U();})
 var id = null, url = null;
 onload=()=>{
   if(location.hash){E.setValue(c = atob(location.hash.slice(1)));U();}
   else if(location.search){
-    output.srcdoc="loading...";
     [url,rest]=location.search.split("&");
     if(url){
-      fetch(page=url.replace(/\?demo=(\d+)/,"../$1/index.html")).then(data=>data.text()).then(txt=>E.setValue(c=txt.replace(/<script.*?kaspersky.*?script>/g,'')),output.src=page)
+      page=url.replace(/\?demo=(\d+)/,"../$1/index.html");
+      output.src=page;
+      fetch(page).then(data=>data.text()).then(txt=>E.setValue(txt.replace(/<script.*?kaspersky.*?script>/g,'')))
     }
   }
 }
