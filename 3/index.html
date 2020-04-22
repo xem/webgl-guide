@@ -1,0 +1,55 @@
+<canvas id="canvas" width=400 height=400></canvas>
+<script src="../lib/webgl.js"></script>
+<script>
+var gl = canvas.getContext("webgl", /* { preserveDrawingBuffer: true } */ );
+
+// Vertex shader
+var vshader = `
+attribute vec4 pos;
+attribute float size;
+void main() {
+  gl_Position = pos;
+  gl_PointSize = size;
+}`;
+
+// Fragment shader
+var fshader = `
+precision mediump float;
+uniform vec4 color;
+void main() {
+  gl_FragColor = color;
+}`;
+
+// Compile program
+var program = compile(gl, vshader, fshader);
+
+// Clear
+gl.clear(gl.COLOR_BUFFER_BIT);
+
+// Get shaders attributes and uniforms
+var pos = gl.getAttribLocation(program, 'pos');
+var size = gl.getAttribLocation(program, 'size');
+var color = gl.getUniformLocation(program, 'color');
+
+// Set the clear color
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+// Clear
+gl.clear(gl.COLOR_BUFFER_BIT);
+
+// Add a new random point every 500ms
+setInterval(() => {
+
+  var x = Math.random() * 2 - 1;
+  var y = Math.random() * 2 - 1;
+  
+  var r = Math.random();
+  var g = Math.random();
+  var b = Math.random();
+  
+  gl.vertexAttrib3f(pos, x, y, 0.0);
+  gl.vertexAttrib1f(size, 10.0);
+  gl.uniform4f(color, r, g, b, 1.0);
+  gl.drawArrays(gl.POINTS, 0, 1);
+}, 500);
+</script>

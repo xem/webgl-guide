@@ -1,5 +1,5 @@
 <canvas id="canvas" width=400 height=400></canvas>
-<script src="../me/webgl.js"></script>
+<script src="../lib/webgl.js"></script>
 <script>
 var gl = canvas.getContext("webgl");
 
@@ -59,7 +59,7 @@ gl.clearColor(0.0, 0.0, 0.0, 1.0);
 var texture = gl.createTexture();
 var sampler = gl.getUniformLocation(program, 'sampler');
 var image = new Image();
-image.src = '../book/resources/sky.jpg';
+image.src = './sky.jpg'; // URL or path relative to the HTML file 
 image.onload = function(){
 
   // Flip the image's y axis

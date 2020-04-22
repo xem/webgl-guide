@@ -1,7 +1,7 @@
 <canvas id="canvas" width=400 height=400></canvas>
-<script src="../me/webgl.js"></script>
-<script src="../me/matrix.js"></script>
-<script src="../me/shapes.js"></script>
+<script src="../lib/webgl.js"></script>
+<script src="../lib/matrix.js"></script>
+<script src="../lib/shapes.js"></script>
 <script>
 
 // Convert deg in radians
@@ -17,7 +17,6 @@ attribute vec3 normal;
 uniform mat4 camera;
 uniform vec3 lightColor;
 uniform vec3 lightDirection;
-uniform vec3 ambientLight;
 varying vec4 v_col;
 void main() {
 
@@ -30,11 +29,8 @@ void main() {
   // Compute diffuse light proportional to this angle
   vec3 diffuse = lightColor * col.rgb * nDotL;
   
-  // Compute ambient light
-  vec3 ambient = ambientLight * col.rgb;
-  
-  // Set varying color
-  v_col = vec4(diffuse + ambient, 1.0);
+  // Set the varying color
+  v_col = vec4(diffuse, 1.0);
 }`;
 
 // Fragment shader program
@@ -74,15 +70,11 @@ cameraMatrix = transform(cameraMatrix, {z: -5, rx: .7, ry: -.8});
 var camera = gl.getUniformLocation(program, 'camera');
 gl.uniformMatrix4fv(camera, false, cameraMatrix);
 
-// Set the diffuse light color and direction
+// Set the diffuse light color (white) and direction
 var lightColor = gl.getUniformLocation(program, 'lightColor');
 gl.uniform3f(lightColor, 1.0, 1.0, 1.0);
 var lightDirection = gl.getUniformLocation(program, 'lightDirection');
 gl.uniform3f(lightDirection, 0.1, 0.6, 0.8);
-
-// Set the ambient light color
-var ambientLight = gl.getUniformLocation(program, 'ambientLight');
-gl.uniform3f(ambientLight, 0.2, 0.2, 0.2);
 
 // Render
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

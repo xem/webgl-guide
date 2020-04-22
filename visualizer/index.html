@@ -16,24 +16,13 @@ E=CodeMirror.fromTextArea(code,{lineNumbers:true,lineWrapping:true,mode:"htmlmix
 E.on("keyup",()=>{location.hash=btoa(U())})
 var id = null, url = null;
 onload=()=>{
-  if(location.search){
+  if(location.hash){E.setValue(atob(location.hash.slice(1)));U();}
+  else if(location.search){
     output.srcdoc="loading...";
-    [url,id]=location.search.split("&");
+    [url,rest]=location.search.split("&");
     if(url){
-      fetch(url.replace("?url=","../me/")).then(data=>data.text()).then(txt=>E.setValue(txt.replace(/<script.*?kaspersky.*?script>/g,'')),setTimeout(U,2000))
-    }
-    if(id){
-      id = id.replace("id=","");
+      fetch(url.replace(/\?demo=(\d+)/,"../$1/index.html")).then(data=>data.text()).then(txt=>E.setValue(txt.replace(/<script.*?kaspersky.*?script>/g,'')),setTimeout(U,500))
     }
   }
-  else if(location.hash){E.setValue(atob(location.hash.slice(1)));U();}
 }
-
-/*top.addEventListener("scroll", () => {
-  if(id){
-    if(top.scrollY > top[id].offsetTop && top.scrollY < top[id].offsetTop + top[id].offsetHeight - 420){
-      output.style.top = top.scrollY - top[id].offsetTop + "px";
-    }
-  }
-});*/
 </script>

@@ -7,15 +7,22 @@ var gl = canvas.getContext("webgl");
 // Describes the attributes of points in spaces (position, size, ...)
 var vshader = `
 void main() {
+
+  // Vertex position: vec4(X, Y, Z, 1.0)
   gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+  
+  // Point size: float
   gl_PointSize = 10.0;
 }`;
 
 // Fragment shader:
-// Describes how each pixel is rendered (color, lighting, ...)
+// Describes in which color each pixel is rendered
 var fshader = `
 precision mediump float;
 void main() {
+
+  // Fragment color: vec4(R, G, B, alpha)
+  // all values are between 0 and 1 
   gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }`;
 

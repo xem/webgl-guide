@@ -1,5 +1,5 @@
 <canvas id="canvas" width=400 height=400></canvas>
-<script src="../me/webgl.js"></script>
+<script src="../lib/webgl.js"></script>
 <script>
 var gl = canvas.getContext("webgl");
 
@@ -28,8 +28,13 @@ var color = gl.getUniformLocation(program, 'color');
 // Set color
 gl.uniform4f(color, 1.0, 0.0, 0.0, 1.0);
 
-// Fill a buffer with pairs of x/y coordinates and pass them to the pos attribute of the vertex shader 
-var vertices = new Float32Array([0, 0.5,   -0.5, -0.5,   0.5, -0.5]);
+// Fill a buffer with pairs of x/y coordinates,
+// and pass them to the pos attribute of the vertex shader 
+var vertices = new Float32Array([
+  0, 0.5,
+  -0.5, -0.5,
+  0.5, -0.5
+]);
 var buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
@@ -50,5 +55,9 @@ gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
 // Render
-gl.drawArrays(gl.TRIANGLES, 0, 3); // draw 3 vertices as a triangle
+gl.drawArrays(
+  gl.TRIANGLES, // mode
+  0,            // start
+  3             // count
+);
 </script>
