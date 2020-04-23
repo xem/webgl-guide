@@ -42,7 +42,7 @@ var vertexTexCoordBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, vertexTexCoordBuffer);
 gl.bufferData(gl.ARRAY_BUFFER, verticesTexCoords, gl.STATIC_DRAW);
 
-// Use every 1st and 2nd float for pos
+// Use every 1st and 2nd float for position
 var position = gl.getAttribLocation(program, 'position');
 gl.vertexAttribPointer(position, 2, gl.FLOAT, false, FSIZE * 4, 0);
 gl.enableVertexAttribArray(position);

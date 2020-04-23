@@ -34,7 +34,7 @@ var scale = gl.getUniformLocation(program, 'scale');
 // Set color
 gl.uniform4f(color, 1.0, 0.0, 0.0, 1.0);
 
-// Set pos
+// Set position
 var vertices = new Float32Array([0, 0.5,   -0.5, -0.5,   0.5, -0.5]);
 arraybuffer(gl, vertices, program, 'position', 2, gl.FLOAT);
 
