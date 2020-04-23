@@ -5,10 +5,10 @@ var gl = canvas.getContext("webgl", /* { preserveDrawingBuffer: true } */ );
 
 // Vertex shader
 var vshader = `
-attribute vec4 pos;
+attribute vec4 position;
 attribute float size;
 void main() {
-  gl_Position = pos;
+  gl_Position = position;
   gl_PointSize = size;
 }`;
 
@@ -27,7 +27,7 @@ var program = compile(gl, vshader, fshader);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
 // Get shaders attributes and uniforms
-var pos = gl.getAttribLocation(program, 'pos');
+var position = gl.getAttribLocation(program, 'position');
 var size = gl.getAttribLocation(program, 'size');
 var color = gl.getUniformLocation(program, 'color');
 
@@ -47,7 +47,7 @@ setInterval(() => {
   var g = Math.random();
   var b = Math.random();
   
-  gl.vertexAttrib3f(pos, x, y, 0.0);
+  gl.vertexAttrib3f(position, x, y, 0.0);
   gl.vertexAttrib1f(size, 10.0);
   gl.uniform4f(color, r, g, b, 1.0);
   gl.drawArrays(gl.POINTS, 0, 1);

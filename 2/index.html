@@ -5,10 +5,10 @@ var gl = canvas.getContext("webgl");
 
 // Vertex shader
 var vshader = `
-attribute vec4 pos;
+attribute vec4 position;
 attribute float size;
 void main() {
-  gl_Position = pos;
+  gl_Position = position;
   gl_PointSize = size;
 }`;
 
@@ -23,10 +23,10 @@ void main() {
 // Compile program
 var program = compile(gl, vshader, fshader);
 
-// Select the pos attribute and set its X/Y/Z values
+// Select the position attribute and set its X/Y/Z values
 // No need to set the 4th value as 1.0, it's the default value in a vec4 attribute
-var pos = gl.getAttribLocation(program, 'pos');
-gl.vertexAttrib3f(pos, 0.0, 0.0, 0.0);
+var position = gl.getAttribLocation(program, 'position');
+gl.vertexAttrib3f(position, 0.0, 0.0, 0.0);
 
 // Select the size attribute and set its value
 var size = gl.getAttribLocation(program, 'size');
@@ -44,11 +44,11 @@ gl.clear(gl.COLOR_BUFFER_BIT);
 gl.drawArrays(gl.POINTS, 0, 1);
 
 // Render two other point
-//gl.vertexAttrib3f(pos, 0.25, 0.0, 0.0);
+//gl.vertexAttrib3f(position, 0.25, 0.0, 0.0);
 //gl.uniform4f(color, 0.0, 1.0, 0.0, 1.0);
 //gl.drawArrays(gl.POINTS, 0, 1);
 
-//gl.vertexAttrib3f(pos, 0.5, 0.0, 0.0);
+//gl.vertexAttrib3f(position, 0.5, 0.0, 0.0);
 //gl.uniform4f(color, 0.0, 0.0, 1.0, 1.0);
 //gl.drawArrays(gl.POINTS, 0, 1);
 </script>

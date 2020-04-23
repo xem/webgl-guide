@@ -14,28 +14,28 @@ deg2rad = angle => Math.PI * angle / 180;
 var gl = canvas.getContext("webgl");
 
 var vshader = `
-attribute vec4 pos; 
-attribute vec4 col;
+attribute vec4 position; 
+attribute vec4 color;
 attribute vec4 normal;
 uniform mat4 mvp;
 uniform mat4 model;            // model matrix
 uniform mat4 inverseTranspose; // inversed transposed model matrix
-varying vec4 v_col;
+varying vec4 v_color;
 varying vec3 v_normal;
 varying vec3 v_position;
 void main() {
 
   // Apply the model matrix and the camera matrix to the vertex position
-  gl_Position = mvp * pos;
+  gl_Position = mvp * position;
   
   // Set varying position for the fragment shader
-  v_position = vec3(model * pos);
+  v_position = vec3(model * position);
   
   // Recompute the face normal
   v_normal = normalize(vec3(inverseTranspose * normal));
   
   // Set the color
-  v_col = col;
+  v_color = color;
 }`;
 
 // Fragment shader program
@@ -46,7 +46,7 @@ uniform vec3 lightPosition;
 uniform vec3 ambientLight;
 varying vec3 v_normal;
 varying vec3 v_position;
-varying vec4 v_col;
+varying vec4 v_color;
 void main() {
 
   // Compute direction between the light and the current point
@@ -75,8 +75,8 @@ var vertices, colors, normals, indices;
 var n = 36;
 
 // Set position, color, normal buffers
-arraybuffer(gl, vertices, program, 'pos', 3, gl.FLOAT)
-arraybuffer(gl, colors, program, 'col', 3, gl.FLOAT)
+arraybuffer(gl, vertices, program, 'position', 3, gl.FLOAT)
+arraybuffer(gl, colors, program, 'color', 3, gl.FLOAT)
 arraybuffer(gl, normals, program, 'normal', 3, gl.FLOAT)
 
 // Set indices

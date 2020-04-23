@@ -5,20 +5,20 @@ var gl = canvas.getContext("webgl");
 
 // Vertex shader
 var vshader = `
-attribute vec4 pos;
+attribute vec4 position;
 attribute vec4 color;
-varying vec4 v_col;
+varying vec4 v_color;
 void main() {
-  gl_Position = pos;
-  v_col = color;
+  gl_Position = position;
+  v_color = color;
 }`;
 
 // Fragment shader
 var fshader = `
 precision mediump float;
-varying vec4 v_col;
+varying vec4 v_color;
 void main() {
-  gl_FragColor = v_col;
+  gl_FragColor = v_color;
 }`;
 
 // Compile program
@@ -42,10 +42,10 @@ var FSIZE = verticesColors.BYTES_PER_ELEMENT;
 gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
 gl.bufferData(gl.ARRAY_BUFFER, verticesColors, gl.STATIC_DRAW);
 
-// Bind the attribute pos to the 1st and 2nd floats in every chunk of 5 floats in the buffer
-var pos = gl.getAttribLocation(program, 'pos');
-gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, FSIZE * 5, 0);
-gl.enableVertexAttribArray(pos);
+// Bind the attribute position to the 1st and 2nd floats in every chunk of 5 floats in the buffer
+var position = gl.getAttribLocation(program, 'position');
+gl.vertexAttribPointer(position, 2, gl.FLOAT, false, FSIZE * 5, 0);
+gl.enableVertexAttribArray(position);
   
 // Bind the attribute color to the 3rd, 4th and 5th float in every chunk
 var color = gl.getAttribLocation(program, 'color');

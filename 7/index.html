@@ -5,11 +5,11 @@ var gl = canvas.getContext("webgl");
 
 // Vertex shader
 var vshader = `
-attribute vec4 pos;
+attribute vec4 position;
 attribute vec2 texCoord;
 varying vec2 v_texCoord;
 void main() {
-  gl_Position = pos;
+  gl_Position = position;
   v_texCoord = texCoord;
 }`;
 
@@ -43,9 +43,9 @@ gl.bindBuffer(gl.ARRAY_BUFFER, vertexTexCoordBuffer);
 gl.bufferData(gl.ARRAY_BUFFER, verticesTexCoords, gl.STATIC_DRAW);
 
 // Use every 1st and 2nd float for pos
-var pos = gl.getAttribLocation(program, 'pos');
-gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, FSIZE * 4, 0);
-gl.enableVertexAttribArray(pos);
+var position = gl.getAttribLocation(program, 'position');
+gl.vertexAttribPointer(position, 2, gl.FLOAT, false, FSIZE * 4, 0);
+gl.enableVertexAttribArray(position);
 
 // Use every 3rd and 4th float for texCoord
 var texCoord = gl.getAttribLocation(program, 'texCoord');

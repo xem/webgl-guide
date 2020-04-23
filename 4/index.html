@@ -5,9 +5,9 @@ var gl = canvas.getContext("webgl");
 
 // Vertex shader
 var vshader = `
-attribute vec4 pos;
+attribute vec4 position;
 void main() {
-  gl_Position = pos;
+  gl_Position = position;
 }`;
 
 // Fragment shader
@@ -22,14 +22,14 @@ void main() {
 var program = compile(gl, vshader, fshader);
 
 // Get shaders attributes and uniforms
-var pos = gl.getAttribLocation(program, 'pos');
+var position = gl.getAttribLocation(program, 'position');
 var color = gl.getUniformLocation(program, 'color');
 
 // Set color
 gl.uniform4f(color, 1.0, 0.0, 0.0, 1.0);
 
 // Fill a buffer with pairs of x/y coordinates,
-// and pass them to the pos attribute of the vertex shader 
+// and pass them to the position attribute of the vertex shader 
 var vertices = new Float32Array([
   0, 0.5,
   -0.5, -0.5,
@@ -39,14 +39,14 @@ var buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 gl.vertexAttribPointer(
-  pos,      // target
+  position, // target
   2,        // size
   gl.FLOAT, // type
   false,    // normalize
   0,        // stride
   0         // offset
 );
-gl.enableVertexAttribArray(pos);
+gl.enableVertexAttribArray(position);
 
 // Set the clear color
 gl.clearColor(0.0, 0.0, 0.0, 1.0);

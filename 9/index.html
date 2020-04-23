@@ -11,25 +11,25 @@ var gl = canvas.getContext("webgl");
 
 // Vertex shader
 var vshader = `
-attribute vec4 pos;
-attribute vec4 col;
+attribute vec4 position;
+attribute vec4 color;
 uniform mat4 camera;
-varying vec4 v_col;
+varying vec4 v_color;
 void main() {
 
   // Apply the camera matrix to the vertex position
-  gl_Position = camera * pos;
+  gl_Position = camera * position;
   
   // Set the varying color
-  v_col = col;
+  v_color = color;
 }`;
 
 // Fragment shader
 var fshader = `
 precision mediump float;
-varying vec4 v_col;
+varying vec4 v_color;
 void main() {
-  gl_FragColor = v_col;
+  gl_FragColor = v_color;
 }`;
 
 // Compile program
@@ -66,8 +66,8 @@ var indices = new Uint8Array([  // Indices
 var n = 36;
 
 // Set position and color
-arraybuffer(gl, vertices, program, 'pos', 3, gl.FLOAT);
-arraybuffer(gl, colors, program, 'col', 3, gl.FLOAT);
+arraybuffer(gl, vertices, program, 'position', 3, gl.FLOAT);
+arraybuffer(gl, colors, program, 'color', 3, gl.FLOAT);
 
 // Set indices
 var indexBuffer = gl.createBuffer();
