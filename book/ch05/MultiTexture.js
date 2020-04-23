@@ -18,7 +18,7 @@ var FSHADER_SOURCE =
   'void main() {\n' +
   '  vec4 color0 = texture2D(u_Sampler0, v_TexCoord);\n' +
   '  vec4 color1 = texture2D(u_Sampler1, v_TexCoord);\n' +
-  '  gl_FragColor = color0 * color1;\n' +
+  '  gl_FragColor = vec4(vec3(1.0, 1.0, 1.0) - color0.rgb, 1.0);\n' +
   '}\n';
 
 function main() {
@@ -127,7 +127,7 @@ function initTextures(gl, n) {
   image1.onload = function(){ loadTexture(gl, n, texture1, u_Sampler1, image1, 1); };
   // Tell the browser to load an Image
   image0.src = '../resources/sky.jpg';
-  image1.src = '../resources/circle.gif';
+  image1.src = '../resources/circle.png';
 
   return true;
 }

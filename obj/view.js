@@ -57,10 +57,10 @@ view = function(z){
     float nDotL = max(dot(lightDirection, v_normal), 0.0);
     
     // Compute diffuse light proportional to this angle
-    vec3 diffuse = lightColor * v_col.rgb * nDotL;
+    vec3 diffuse = lightColor * v_color.rgb * nDotL;
     
     // Compute ambient light
-    vec3 ambient = ambientLight * v_col.rgb;
+    vec3 ambient = ambientLight * v_color.rgb;
     
     // Compute total light (diffuse + ambient)
     gl_FragColor = vec4(diffuse + ambient, 1.0) * vec4(texture2D(sampler, v_uv));
@@ -113,8 +113,8 @@ view = function(z){
   gl.enable(gl.DEPTH_TEST);
 
   // Set the camera
-  var cameraMatrix = perspective({fovy: deg2rad(100), ratio: a.width/a.height, near: 1, far: 100});
-  cameraMatrix = transform(cameraMatrix, {y: -.3, z: -4, rx: 0, ry: 0, rx: .1});
+  var cameraMatrix = identity();// perspective({fov: deg2rad(60), ratio: a.width/a.height, near: 0, far: 100});
+  cameraMatrix = transform(cameraMatrix, {y: 0, z: -10, rx: 0, ry: 0, rx: .1});
 
   // Set the point light color and position
   var lightColor = gl.getUniformLocation(program, 'lightColor');

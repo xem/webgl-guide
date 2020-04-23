@@ -25,7 +25,7 @@ void main() {
 // Compile program
 var program = compile(gl, vshader, fshader);
 
-// Buffer (X,Y: vertex coordinates, U,V: texture coordinates)
+// Interleaved data buffer (X,Y: vertex coordinates, U,V: texture coordinates)
 // Texture coordinates are also sometimes called S and T
 var verticesTexCoords = new Float32Array([
   -0.5, 0.5,  0.0, 1.0,
