@@ -28,10 +28,10 @@ void main() {
   float nDotL = max(dot(lightDirection, normalize(normal)), 0.0);
   
   // Compute diffuse light proportional to this angle
-  vec3 diffuse = lightColor * col.rgb * nDotL;
+  vec3 diffuse = lightColor * color.rgb * nDotL;
   
   // Compute ambient light
-  vec3 ambient = ambientLight * col.rgb;
+  vec3 ambient = ambientLight * color.rgb;
   
   // Set varying color
   v_color = vec4(diffuse + ambient, 1.0);

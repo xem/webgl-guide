@@ -24,7 +24,7 @@ void main() {
   gl_Position = camera * position;
   
   // Set varying position for the fragment shader 
-  v_position = vec3(pos.xyz);
+  v_position = vec3(position.xyz);
   
   // Set the face normal
   v_normal = normalize(normal);
