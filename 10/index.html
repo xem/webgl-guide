@@ -45,20 +45,24 @@ void main() {
 var program = compile(gl, vshader, fshader);
 
 // Initialize a cube
-var vertices, colors, normals, indices;
-[vertices, colors, normals, indices] = cube(1, 0, 0);
+var vertices, normals, indices;
+[vertices, normals, indices] = cube();
 
-var n = 36;
+// Count vertices
+var n = indices.length;
 
 // Set position, color, normal buffers
-arraybuffer(gl, vertices, program, 'position', 3, gl.FLOAT)
-arraybuffer(gl, colors, program, 'color', 3, gl.FLOAT)
-arraybuffer(gl, normals, program, 'normal', 3, gl.FLOAT)
+arraybuffer(gl, vertices, program, 'position', 3, gl.FLOAT);
+arraybuffer(gl, normals, program, 'normal', 3, gl.FLOAT);
 
 // Set indices
 var indexBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+// Set cube color
+var color = gl.getAttribLocation(program, 'color');
+gl.vertexAttrib3f(color, 1.0, 0.0, 0.0);
 
 // Set the clear color and enable the depth test
 gl.clearColor(0, 0, 0, 1);
@@ -78,5 +82,5 @@ gl.uniform3f(lightDirection, 0.1, 0.6, 0.8);
 
 // Render
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
 </script>

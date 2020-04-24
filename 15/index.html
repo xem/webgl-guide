@@ -69,20 +69,24 @@ void main() {
 var program = compile(gl, vshader, fshader);
 
 // Initialize a cube
-var vertices, colors, normals, indices;
-[vertices, colors, normals, indices] = cube(1, 0, 0);
+var vertices, normals, indices;
+[vertices, normals, indices] = cube();
 
-var n = 36;
+// Count vertices
+var n = indices.length;
 
-// Set position, color, normal buffers
-arraybuffer(gl, vertices, program, 'position', 3, gl.FLOAT)
-arraybuffer(gl, colors, program, 'color', 3, gl.FLOAT)
-arraybuffer(gl, normals, program, 'normal', 3, gl.FLOAT)
+// Set position, normal buffers
+arraybuffer(gl, vertices, program, 'position', 3, gl.FLOAT);
+arraybuffer(gl, normals, program, 'normal', 3, gl.FLOAT);
 
 // Set indices
 var indexBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+// Set cube color
+var color = gl.getAttribLocation(program, 'color');
+gl.vertexAttrib3f(color, 1.0, 0.0, 0.0);
 
 // Set the clear color and enable the depth test
 gl.clearColor(0, 0, 0, 1);
@@ -134,21 +138,21 @@ drawArm = (gl, n, cameraMatrix) => {
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // Shoukder
+  // Shoulder
   var modelMatrix = identity();
   modelMatrix = transform(modelMatrix, {x: -3});
-  drawShape(gl, program, cameraMatrix, modelMatrix, 2, 1, 1);
+  drawShape(gl, program, cameraMatrix, modelMatrix, n, 2, 1, 1);
   
   // Arm  
   var modelMatrix = identity();
   modelMatrix = transform(modelMatrix, {rx: armAngle}); // rotate
   modelMatrix = transform(modelMatrix, {y: -2});        // translate
-  drawShape(gl, program, cameraMatrix, modelMatrix, 1, 3, 1);
+  drawShape(gl, program, cameraMatrix, modelMatrix, n, 1, 3, 1);
   
   // Hand (reuse the same matrix!)
   modelMatrix = transform(modelMatrix, {ry: handAngle});  // rotate
   modelMatrix = transform(modelMatrix, {y: -3});          // translate
-  drawShape(gl, program, cameraMatrix, modelMatrix, 2, .1, 2);
+  drawShape(gl, program, cameraMatrix, modelMatrix, n, 2, .1, 2);
 }
 
 // Update the angles and redraw the arm at each frame
