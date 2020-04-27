@@ -8,7 +8,7 @@
 deg2rad = angle => Math.PI * angle / 180;
 
 // WebGL canvas context
-var gl = canvas.getContext("webgl");
+var gl = canvas.getContext('webgl');
 
 var vshader = `
 attribute vec4 position; 
@@ -44,20 +44,27 @@ varying vec3 v_position;
 varying vec4 v_color;
 void main() {
 
-  // Compute direction between the light and the current point
+  // Compute direction between the point light and the current fragment
   vec3 lightDirection = normalize(lightPosition - v_position);
   
-  // Compute angle between the normal and that direction
+  // Compute angle between the face normal and that direction
   float nDotL = max(dot(lightDirection, v_normal), 0.0);
   
   // Compute diffuse light proportional to this angle
   vec3 diffuse = lightColor * v_color.rgb * nDotL;
   
+  // Compute distance from light to fragment
+  float distance = length(lightPosition - v_position);
+  
+  // Compute light attenuation (10.0 / distance), clamped between 0 and 1.
+  // The value 3.0 is arbitrary and means that anything up to 3 units away from the light is fully lighted.
+  float attenuation = clamp(3.0 / distance, 0.0, 1.0);
+  
   // Compute ambient light
   vec3 ambient = ambientLight * v_color.rgb;
   
   // Compute total light (diffuse + ambient)
-  gl_FragColor = vec4(diffuse + ambient, 1.0);
+  gl_FragColor = vec4(attenuation * diffuse + ambient, 1.0);
 }`;
 
 // Compile program
@@ -81,7 +88,7 @@ gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
 // Set cube color
 var color = gl.getAttribLocation(program, 'color');
-gl.vertexAttrib3f(color, 1.0, 0.0, 0.0);
+gl.vertexAttrib3f(color, 1, 0, 0);
 
 // Set the clear color and enable the depth test
 gl.clearColor(0, 0, 0, 1);

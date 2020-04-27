@@ -11,7 +11,7 @@
 deg2rad = angle => Math.PI * angle / 180;
 
 // WebGL canvas context
-var gl = canvas.getContext("webgl");
+var gl = canvas.getContext('webgl');
 
 var vshader = `
 attribute vec4 position; 
@@ -86,7 +86,7 @@ gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
 // Set cube color
 var color = gl.getAttribLocation(program, 'color');
-gl.vertexAttrib3f(color, 1.0, 0.0, 0.0);
+gl.vertexAttrib3f(color, 1, 0, 0);
 
 // Set the clear color and enable the depth test
 gl.clearColor(0, 0, 0, 1);

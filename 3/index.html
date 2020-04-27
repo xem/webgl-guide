@@ -1,7 +1,7 @@
 <canvas id="canvas" width=400 height=400></canvas>
 <script src="../lib/webgl.js"></script>
 <script>
-var gl = canvas.getContext("webgl", /* { preserveDrawingBuffer: true } */ );
+var gl = canvas.getContext('webgl', /* { preserveDrawingBuffer: true } */ );
 
 // Vertex shader
 var vshader = `
@@ -47,8 +47,8 @@ setInterval(() => {
   var g = Math.random();
   var b = Math.random();
   
-  gl.vertexAttrib3f(position, x, y, 0.0);
-  gl.vertexAttrib1f(size, 10.0);
+  gl.vertexAttrib3f(position, x, y, 0);
+  gl.vertexAttrib1f(size, 10);
   gl.uniform4f(color, r, g, b, 1.0);
   gl.drawArrays(gl.POINTS, 0, 1);
 }, 500);

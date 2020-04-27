@@ -1,7 +1,7 @@
 <canvas id="canvas" width=400 height=400></canvas>
 <script src="../lib/webgl.js"></script>
 <script>
-var gl = canvas.getContext("webgl");
+var gl = canvas.getContext('webgl');
 
 // Vertex shader
 var vshader = `
@@ -24,13 +24,12 @@ void main() {
 var program = compile(gl, vshader, fshader);
 
 // Select the position attribute and set its X/Y/Z values
-// No need to set the 4th value as 1.0, it's the default value in a vec4 attribute
 var position = gl.getAttribLocation(program, 'position');
-gl.vertexAttrib3f(position, 0.0, 0.0, 0.0);
+gl.vertexAttrib4f(position, 0, 0, 0, 1);
 
 // Select the size attribute and set its value
 var size = gl.getAttribLocation(program, 'size');
-gl.vertexAttrib1f(size, 10.0);
+gl.vertexAttrib1f(size, 10);
 
 // Select the color uniform and set its value
 var color = gl.getUniformLocation(program, "color");
@@ -44,11 +43,11 @@ gl.clear(gl.COLOR_BUFFER_BIT);
 gl.drawArrays(gl.POINTS, 0, 1);
 
 // Render two other point
-//gl.vertexAttrib3f(position, 0.25, 0.0, 0.0);
+//gl.vertexAttrib3f(position, 0.25, 0, 0);
 //gl.uniform4f(color, 0.0, 1.0, 0.0, 1.0);
 //gl.drawArrays(gl.POINTS, 0, 1);
 
-//gl.vertexAttrib3f(position, 0.5, 0.0, 0.0);
+//gl.vertexAttrib3f(position, 0.5, 0, 0);
 //gl.uniform4f(color, 0.0, 0.0, 1.0, 1.0);
 //gl.drawArrays(gl.POINTS, 0, 1);
 </script>

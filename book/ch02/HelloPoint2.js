@@ -41,7 +41,7 @@ function main() {
   gl.vertexAttrib3f(a_Position, 0.0, 0.0, 0.0);
 
   // Specify the color for clearing <canvas>
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor(0, 0, 0, 1);
 
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
