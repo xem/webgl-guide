@@ -33,7 +33,7 @@ gl.vertexAttrib1f(size, 10);
 
 // Select the color uniform and set its value
 var color = gl.getUniformLocation(program, "color");
-gl.uniform4f(color, 1.0, 0.0, 0.0, 1.0);
+gl.uniform4f(color, 1, 0, 0, 1);
 
 // Set the clear color
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -44,10 +44,10 @@ gl.drawArrays(gl.POINTS, 0, 1);
 
 // Render two other point
 //gl.vertexAttrib3f(position, 0.25, 0, 0);
-//gl.uniform4f(color, 0.0, 1.0, 0.0, 1.0);
+//gl.uniform4f(color, 0, 1, 0, 1);
 //gl.drawArrays(gl.POINTS, 0, 1);
 
 //gl.vertexAttrib3f(position, 0.5, 0, 0);
-//gl.uniform4f(color, 0.0, 0.0, 1.0, 1.0);
+//gl.uniform4f(color, 0, 0, 1, 1);
 //gl.drawArrays(gl.POINTS, 0, 1);
 </script>

@@ -49,7 +49,7 @@ setInterval(() => {
   
   gl.vertexAttrib3f(position, x, y, 0);
   gl.vertexAttrib1f(size, 10);
-  gl.uniform4f(color, r, g, b, 1.0);
+  gl.uniform4f(color, r, g, b, 1);
   gl.drawArrays(gl.POINTS, 0, 1);
 }, 500);
 </script>

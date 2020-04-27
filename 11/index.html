@@ -80,7 +80,7 @@ gl.uniformMatrix4fv(camera, false, cameraMatrix);
 
 // Set the diffuse light color and direction
 var lightColor = gl.getUniformLocation(program, 'lightColor');
-gl.uniform3f(lightColor, 1.0, 1.0, 1.0);
+gl.uniform3f(lightColor, 1, 1, 1);
 var lightDirection = gl.getUniformLocation(program, 'lightDirection');
 gl.uniform3f(lightDirection, 0.1, 0.6, 0.8);
 

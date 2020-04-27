@@ -98,7 +98,7 @@ cameraMatrix = transform(cameraMatrix, {z: -15});
 
 // Set the point light color and position
 var lightColor = gl.getUniformLocation(program, 'lightColor');
-gl.uniform3f(lightColor, 1.0, 1.0, 1.0);
+gl.uniform3f(lightColor, 1, 1, 1);
 
 var lightPosition = gl.getUniformLocation(program, 'lightPosition');
 gl.uniform3f(lightPosition, 2.5, 2.5, 2.5);
