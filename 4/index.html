@@ -28,19 +28,19 @@ var color = gl.getUniformLocation(program, 'color');
 // Set color
 gl.uniform4f(color, 1, 0, 0, 1);
 
-// Fill a buffer with pairs of x/y coordinates,
+// Fill a buffer with a list of x/y/z coordinates,
 // and pass them to the position attribute of the vertex shader 
 var vertices = new Float32Array([
-  0, 0.5,
-  -0.5, -0.5,
-  0.5, -0.5
+   0,    0.5, 0,
+  -0.5, -0.5, 0,
+   0.5, -0.5, 0
 ]);
 var buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 gl.vertexAttribPointer(
   position, // target
-  2,        // size
+  3,        // chunk size (send the values 3 by 3)
   gl.FLOAT, // type
   false,    // normalize
   0,        // stride
