@@ -104,9 +104,9 @@ view = function(z){
   var n = 36;
 
   // Set position, color, normal buffers
-  arraybuffer(gl, vertices, program, 'position', 3, gl.FLOAT);
-  arraybuffer(gl, normals, program, 'normal', 3, gl.FLOAT);
-  arraybuffer(gl, uv, program, 'uv', 2, gl.FLOAT);
+  buffer(gl, vertices, program, 'position', 3, gl.FLOAT);
+  buffer(gl, normals, program, 'normal', 3, gl.FLOAT);
+  buffer(gl, uv, program, 'uv', 2, gl.FLOAT);
 
   // Set the clear color and enable the depth test
   gl.clearColor(0, 0, 0, 1);

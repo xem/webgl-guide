@@ -66,8 +66,8 @@ var indices = new Uint8Array([  // Indices
 var n = 36;
 
 // Set position and color
-arraybuffer(gl, vertices, program, 'position', 3, gl.FLOAT);
-arraybuffer(gl, colors, program, 'color', 3, gl.FLOAT);
+buffer(gl, vertices, program, 'position', 3, gl.FLOAT);
+buffer(gl, colors, program, 'color', 3, gl.FLOAT);
 
 // Set indices
 var indexBuffer = gl.createBuffer();

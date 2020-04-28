@@ -26,10 +26,10 @@ var program = compile(gl, vshader, fshader);
 
 // Define vertices and colors
 var verticesColors = new Float32Array([
-  //x ,  y,    r,    g,    b
-  0.0,   0.5,  1.0,  0.0,  0.0, 
-  -0.5,  -0.5, 0.0,  1.0,  0.0, 
-  0.5,  -0.5, 0.0,  0.0,  1.0, 
+   //x ,  y,    z,    r,    g,    b
+   0.0,   0.5,  0.0,  1.0,  0.0,  0.0, 
+  -0.5,  -0.5,  0.0,  0.0,  1.0,  0.0, 
+   0.5,  -0.5,  0.0,  0.0,  0.0,  1.0, 
 ]);
   
 // Save the number of vertices (3)
@@ -44,12 +44,12 @@ gl.bufferData(gl.ARRAY_BUFFER, verticesColors, gl.STATIC_DRAW);
 
 // Bind the attribute position to the 1st and 2nd floats in every chunk of 5 floats in the buffer
 var position = gl.getAttribLocation(program, 'position');
-gl.vertexAttribPointer(position, 2, gl.FLOAT, false, FSIZE * 5, 0);
+gl.vertexAttribPointer(position, 3, gl.FLOAT, false, FSIZE * 6, 0);
 gl.enableVertexAttribArray(position);
   
 // Bind the attribute color to the 3rd, 4th and 5th float in every chunk
 var color = gl.getAttribLocation(program, 'color');
-gl.vertexAttribPointer(color, 3, gl.FLOAT, false, FSIZE * 5, FSIZE * 2);
+gl.vertexAttribPointer(color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
 gl.enableVertexAttribArray(color);
 
 // Set the clear color

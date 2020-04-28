@@ -36,7 +36,7 @@ gl.uniform4f(color, 1.0, 0.0, 0.0, 1.0);
 
 // Set position
 var vertices = new Float32Array([0, 0.5,   -0.5, -0.5,   0.5, -0.5]);
-arraybuffer(gl, vertices, program, 'position', 2, gl.FLOAT);
+buffer(gl, vertices, program, 'position', 2, gl.FLOAT);
 
 // Set translation matrix (transposed)
 var Tx = .8;

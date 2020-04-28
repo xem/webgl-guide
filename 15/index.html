@@ -76,8 +76,8 @@ var vertices, normals, indices;
 var n = indices.length;
 
 // Set position, normal buffers
-arraybuffer(gl, vertices, program, 'position', 3, gl.FLOAT);
-arraybuffer(gl, normals, program, 'normal', 3, gl.FLOAT);
+buffer(gl, vertices, program, 'position', 3, gl.FLOAT);
+buffer(gl, normals, program, 'normal', 3, gl.FLOAT);
 
 // Set indices
 var indexBuffer = gl.createBuffer();
