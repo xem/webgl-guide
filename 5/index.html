@@ -27,9 +27,9 @@ var program = compile(gl, vshader, fshader);
 // Define vertices and colors
 var verticesColors = new Float32Array([
    //x ,  y,    z,    r,    g,    b
-   0.0,   0.5,  0.0,  1.0,  0.0,  0.0, 
-  -0.5,  -0.5,  0.0,  0.0,  1.0,  0.0, 
-   0.5,  -0.5,  0.0,  0.0,  0.0,  1.0, 
+   0.0,   0.5,  0.0,  0.0,  1.0,  0.0, 
+  -0.5,  -0.5,  0.0,  0.0,  0.0,  1.0, 
+   0.5,  -0.5,  0.0,  1.0,  0.0,  0.0, 
 ]);
   
 // Save the number of vertices (3)
@@ -42,14 +42,28 @@ var FSIZE = verticesColors.BYTES_PER_ELEMENT;
 gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
 gl.bufferData(gl.ARRAY_BUFFER, verticesColors, gl.STATIC_DRAW);
 
-// Bind the attribute position to the 1st and 2nd floats in every chunk of 5 floats in the buffer
+// Bind the attribute position to the 1st, 2nd and 3rd floats in every chunk of 6 floats in the buffer
 var position = gl.getAttribLocation(program, 'position');
-gl.vertexAttribPointer(position, 3, gl.FLOAT, false, FSIZE * 6, 0);
+gl.vertexAttribPointer(
+  position,   // target
+  3,          // interleaved data size
+  gl.FLOAT,   // type
+  false,      // normalize
+  FSIZE * 6,  // stride (chunk size)
+  0           // offset (position of interleaved data in chunk) 
+);
 gl.enableVertexAttribArray(position);
   
 // Bind the attribute color to the 3rd, 4th and 5th float in every chunk
 var color = gl.getAttribLocation(program, 'color');
-gl.vertexAttribPointer(color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+gl.vertexAttribPointer(
+  color,      // target
+  3,          // interleaved chunk size
+  gl.FLOAT,   // type
+  false,      // normalize
+  FSIZE * 6,  // stride
+  FSIZE * 3   // offset
+);
 gl.enableVertexAttribArray(color);
 
 // Set the clear color
