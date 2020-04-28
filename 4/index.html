@@ -31,9 +31,9 @@ gl.uniform4f(color, 1, 0, 0, 1);
 // Fill a buffer with a list of x/y/z coordinates,
 // and pass them to the position attribute of the vertex shader 
 var vertices = new Float32Array([
-   0,    0.5, 0,
-  -0.5, -0.5, 0,
-   0.5, -0.5, 0
+   0,    0.5, 0, // point 1
+  -0.5, -0.5, 0, // point 2
+   0.5, -0.5, 0  // point 3
 ]);
 var buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
