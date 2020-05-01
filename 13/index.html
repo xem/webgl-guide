@@ -11,25 +11,24 @@ deg2rad = angle => Math.PI * angle / 180;
 var gl = canvas.getContext('webgl');
 
 var vshader = `
+precision mediump float;
 attribute vec4 position; 
 attribute vec4 color;
-attribute vec4 normal;
-uniform mat4 mvp;
-uniform mat4 model;            // model matrix
-uniform mat4 inverseTranspose; // inversed transposed model matrix
+attribute vec3 normal;
+uniform mat4 camera;
 varying vec4 v_color;
 varying vec3 v_normal;
 varying vec3 v_position;
 void main() {
 
-  // Apply the model matrix and the camera matrix to the vertex position
-  gl_Position = mvp * position;
+  // Apply the camera matrix to the vertex position
+  gl_Position = camera * position;
   
-  // Set varying position for the fragment shader
-  v_position = vec3(model * position);
+  // Set varying position for the fragment shader 
+  v_position = vec3(position.xyz);
   
-  // Recompute the face normal
-  v_normal = normalize(vec3(inverseTranspose * normal));
+  // Set the face normal
+  v_normal = normalize(normal);
   
   // Set the color
   v_color = color;
@@ -38,6 +37,7 @@ void main() {
 // Fragment shader program
 var fshader = `
 precision mediump float;
+uniform mat4 camera;
 uniform vec3 lightColor;
 uniform vec3 lightPosition;
 uniform vec3 ambientLight;
@@ -46,20 +46,37 @@ varying vec3 v_position;
 varying vec4 v_color;
 void main() {
 
-  // Compute direction between the light and the current point
+  // Compute direction between the point light and the current fragment
   vec3 lightDirection = normalize(lightPosition - v_position);
   
-  // Compute angle between the normal and that direction
+  // Compute angle between the face normal and that direction
   float nDotL = max(dot(lightDirection, v_normal), 0.0);
   
   // Compute diffuse light proportional to this angle
   vec3 diffuse = lightColor * v_color.rgb * nDotL;
   
+  // Compute distance from light to fragment
+  float distance = length(lightPosition - v_position);
+  
+  // Compute light attenuation (3.0 / distance)
+  float attenuation = clamp(3.0 / distance, 0.0, 1.0);
+  
   // Compute ambient light
   vec3 ambient = ambientLight * v_color.rgb;
+
+  // Compute specular light
+  float shininess = 100.0;
+  vec3 normal = normalize(v_normal);
+  vec3 lightPosition = vec3(camera * vec4(lightPosition, 1) - vec4(v_position, 1.0));
+  vec3 lightDir = normalize(lightPosition);
+  float lightDist = length(lightPosition);
+  float specular = 0.0;
+  vec3 viewVec = vec3(0,0, 1.0);
+  vec3 reflectVec = reflect(lightDir, normal);
+  specular = pow(max(dot(reflectVec, viewVec), 0.0), shininess);
+  gl_FragColor = vec4(attenuation * diffuse + ambient + specular, 1.0);
   
-  // Compute total light (diffuse + ambient)
-  gl_FragColor = vec4(diffuse + ambient, 1.0);
+  
 }`;
 
 // Compile program
@@ -91,46 +108,21 @@ gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
 var cameraMatrix = perspective({fov: deg2rad(30), aspect: 1, near: 1, far: 100});
-cameraMatrix = transform(cameraMatrix, {z: -3.5, rx: .5, ry: -.5});
+cameraMatrix = transform(cameraMatrix, {z: -3.5, rx: 0, ry: .3});
+var camera = gl.getUniformLocation(program, 'camera');
+gl.uniformMatrix4fv(camera, false, cameraMatrix);
 
 // Set the point light color and position
 var lightColor = gl.getUniformLocation(program, 'lightColor');
 gl.uniform3f(lightColor, 1, 1, 1);
-
 var lightPosition = gl.getUniformLocation(program, 'lightPosition');
-gl.uniform3f(lightPosition, 1.5, 1.5, 1.5);
+gl.uniform3f(lightPosition, -1, 0, 3);
 
 // Set the ambient light color
 var ambientLight = gl.getUniformLocation(program, 'ambientLight');
 gl.uniform3f(ambientLight, 0.1, 0.1, 0.1);
 
-// Get uniforms used in the loop
-var model = gl.getUniformLocation(program, 'model');
-var mvp = gl.getUniformLocation(program, 'mvp');
-var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
-
-var cubeAngle = 0;
-
-// Loop
-setInterval(() => {
-  
-  cubeAngle += .01;
-  
-  // Set the model matrix
-  var modelMatrix = identity();
-  modelMatrix = transform(modelMatrix, {ry: cubeAngle});
-  gl.uniformMatrix4fv(model, false, modelMatrix);
-  
-  // Set the cube's mvp matrix (camera x model)
-  var mvpMatrix = multMat4Mat4(cameraMatrix, modelMatrix);
-  gl.uniformMatrix4fv(mvp, false, mvpMatrix);
-  
-  // Set the inverse transpose of the model matrix
-  var inverseTransposeMatrix = transpose(inverse(modelMatrix));
-  gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix);
-
-  // Render
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
-}, 16);
+// Render
+gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
 </script>

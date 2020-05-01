@@ -56,8 +56,8 @@ void main() {
   // Compute distance from light to fragment
   float distance = length(lightPosition - v_position);
   
-  // Compute light attenuation (10.0 / distance), clamped between 0 and 1.
-  // The value 3.0 is arbitrary and means that anything up to 3 units away from the light is fully lighted.
+  // Compute light attenuation (3.0 / distance), clamped between 0 and 1.
+  // The value 3.0 is freely editable and means that anything up to 3 units away from the light is fully lighted.
   float attenuation = clamp(3.0 / distance, 0.0, 1.0);
   
   // Compute ambient light
