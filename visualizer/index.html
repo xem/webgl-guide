@@ -21,7 +21,8 @@ onload=()=>{
   else if(location.search){
     [url,rest]=location.search.split("&");
     if(url){
-      page=url.replace(/\?demo=(\d+)/,"../$1/index.html");
+      console.log(url);
+      page=url.replace(/\?demo=(.*)/,"../$1/index.html");
       output.src=page;
       fetch(page).then(data=>data.text()).then(txt=>E.setValue(txt.replace(/<script.*?kaspersky.*?script>/g,'')))
     }
