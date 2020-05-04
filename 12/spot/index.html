@@ -1,7 +1,7 @@
 <canvas id="canvas" width=400 height=400></canvas>
-<script src="../lib/webgl.js"></script>
-<script src="../lib/matrix.js"></script>
-<script src="../lib/shapes.js"></script>
+<script src="//xem.github.io/webgl-guide/lib/webgl.js"></script>
+<script src="//xem.github.io/webgl-guide/lib/matrix.js"></script>
+<script src="//xem.github.io/webgl-guide/lib/shapes.js"></script>
 <script>
 
 // Convert deg in radians
@@ -111,13 +111,14 @@ var d = 1.;
 var lightColor = gl.getUniformLocation(program, 'lightColor');
 gl.uniform3f(lightColor, 1, 1, 1);
 var lightPosition = gl.getUniformLocation(program, 'lightPosition');
-gl.uniform3f(lightPosition, 2.5, 2., 2.5);
+gl.uniform3f(lightPosition, 1.4, 1.1, 1.5);
   
 // Set the spot direction and angle
 var spotdirection = gl.getUniformLocation(program, 'spotDirection');
 gl.uniform3f(spotdirection, -1, -1, -1);
+
 var spotAngle = gl.getUniformLocation(program, 'spotAngle');
-gl.uniform1f(spotAngle, Math.cos(deg2rad(10)));
+gl.uniform1f(spotAngle, Math.cos(deg2rad(20)));
 
 // Set the ambient light color
 var ambientLight = gl.getUniformLocation(program, 'ambientLight');
