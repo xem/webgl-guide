@@ -10,27 +10,25 @@ deg2rad = angle => Math.PI * angle / 180;
 // WebGL canvas context
 var gl = canvas.getContext('webgl');
 
+// Vertex shader
 var vshader = `
 precision mediump float;
-attribute vec4 position; 
+uniform mat4 perspective;
+uniform mat4 camera;
+attribute vec4 position;
 attribute vec4 color;
 attribute vec3 normal;
-uniform mat4 camera;
-varying vec4 v_color;
+varying vec4 v_position;
 varying vec3 v_normal;
-varying vec3 v_position;
+varying vec4 v_color;
 void main() {
-
-  // Apply the camera matrix to the vertex position
-  gl_Position = camera * position;
+  v_position =  camera * position;
+  gl_Position = perspective * v_position;
   
-  // Set varying position for the fragment shader 
-  v_position = vec3(position.xyz);
+  // Now that the camera has a position, we need to apply it to the normal
+  // We'll see that in detail in the next chapters
+  v_normal = normalize( mat3(camera) * normal);
   
-  // Set the face normal
-  v_normal = normalize(normal);
-  
-  // Set the color
   v_color = color;
 }`;
 
@@ -38,45 +36,27 @@ void main() {
 var fshader = `
 precision mediump float;
 uniform mat4 camera;
-uniform vec3 lightColor;
-uniform vec3 lightPosition;
-uniform vec3 ambientLight;
+uniform vec3 lightposition;
+varying vec4 v_position;
 varying vec3 v_normal;
-varying vec3 v_position;
 varying vec4 v_color;
 void main() {
-
-  // Compute direction between the point light and the current fragment
-  vec3 lightDirection = normalize(lightPosition - v_position);
-  
-  // Compute angle between the face normal and that direction
-  float nDotL = max(dot(lightDirection, v_normal), 0.0);
-  
-  // Compute diffuse light proportional to this angle
-  vec3 diffuse = lightColor * v_color.rgb * nDotL;
-  
-  // Compute distance from light to fragment
-  float distance = length(lightPosition - v_position);
-  
-  // Compute light attenuation (3.0 / distance)
-  float attenuation = clamp(3.0 / distance, 0.0, 1.0);
-  
-  // Compute ambient light
-  vec3 ambient = ambientLight * v_color.rgb;
-
-  // Compute specular light
-  float shininess = 100.0;
   vec3 normal = normalize(v_normal);
-  vec3 lightPosition = vec3(camera * vec4(lightPosition, 1) - vec4(v_position, 1.0));
+  vec3 lightPosition = vec3(camera * vec4(lightposition, 1) - v_position);
   vec3 lightDir = normalize(lightPosition);
   float lightDist = length(lightPosition);
   float specular = 0.0;
-  vec3 viewVec = vec3(0,0, 1.0);
-  vec3 reflectVec = reflect(lightDir, normal);
-  specular = pow(max(dot(reflectVec, viewVec), 0.0), shininess);
-  gl_FragColor = vec4(attenuation * diffuse + ambient + specular, 1.0);
+  float d = max(dot(v_normal, lightDir), 0.0);
+  if (d > 0.0) {
+    vec3 viewVec = vec3(0,0,1.0);
+    vec3 reflectVec = reflect(-lightDir, normal);
+    specular = pow(max(dot(reflectVec, viewVec), 0.0), 120.0);
+  }
   
-  
+  gl_FragColor.rgb = vec3(0.1, 0.1, 0.1)     // ambient
+                   + vec3(0.4, 0.0, 0.0) * d // diffuse
+                   + specular;               // specular
+  gl_FragColor.a = 1.0;
 }`;
 
 // Compile program
@@ -106,21 +86,22 @@ gl.vertexAttrib3f(color, 1, 0, 0);
 gl.clearColor(0, 0, 0, 1);
 gl.enable(gl.DEPTH_TEST);
 
-// Set the camera
-var cameraMatrix = perspective({fov: deg2rad(30), aspect: 1, near: 1, far: 100});
-cameraMatrix = transform(cameraMatrix, {z: -3.5, rx: 0, ry: .3});
-var camera = gl.getUniformLocation(program, 'camera');
-gl.uniformMatrix4fv(camera, false, cameraMatrix);
 
-// Set the point light color and position
-var lightColor = gl.getUniformLocation(program, 'lightColor');
-gl.uniform3f(lightColor, 1, 1, 1);
-var lightPosition = gl.getUniformLocation(program, 'lightPosition');
-gl.uniform3f(lightPosition, -1, 0, 3);
+// Set perspective
+var perspectiveLocation = gl.getUniformLocation(program, 'perspective');
+gl.uniformMatrix4fv(perspectiveLocation, false, perspective({fov: deg2rad(30), ratio: 1, near: 1, far: 100}));
 
-// Set the ambient light color
-var ambientLight = gl.getUniformLocation(program, 'ambientLight');
-gl.uniform3f(ambientLight, 0.1, 0.1, 0.1);
+// Set camera
+var cameraLocation = gl.getUniformLocation(program, 'camera');
+gl.uniformMatrix4fv(cameraLocation, false, transform(identity(), {z: -5, ry: -.3}));
+
+// Set light color
+var color = gl.getAttribLocation(program, 'color');
+gl.vertexAttrib3f(color, 1, 0, 0);
+
+// Set light position
+var lightPositionShaderLocation = gl.getUniformLocation(program, 'lightposition');
+gl.uniform3fv(lightPositionShaderLocation, new Float32Array([0, 0, 2]));
 
 // Render
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
