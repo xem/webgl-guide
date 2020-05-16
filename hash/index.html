@@ -1,0 +1,112 @@
+<style>*{font-family:courier}</style>
+<h2>WebGL hash collider</h2>
+<p>This page tells how a given hash transforms each of the most useful WebGL methods and constants, and if a collision prevents a hash from being used:
+
+<h4>Hash</h4>
+
+for(i in g=c.getContext("webgl"){g[<input id=t value="i[0]+[i[6]]" style="width:500px;background:#efd">]=g[i]}
+
+<br>
+
+<h4>Try other hashs</h4>
+
+<button onclick="t.value='i[0]+[i[6]]'">i[0]+[i[6]]</button> 
+<button onclick="t.value='i[0]+[i[6]]+[i[12]]+i.length%9'">i[0]+[i[6]]+[i[12]]+i.length%9</button> 
+<br>
+
+
+<h4>Results (green = safe, red = collision)</h4>
+
+<pre id=r style="background:#e5f2ff;padding:20px"></pre>
+
+<canvas id=c>
+
+<script>
+
+onload = onclick = t.oninput = () => {
+
+r.innerHTML = ""
+
+g = c.getContext("webgl");
+
+eval('for(i in g=c.getContext("webgl")){g[' + t.value + ']=g[i]}');
+
+gg = g;
+
+values = [
+"createShader",
+"shaderSource",
+"compileShader",
+"createProgram",
+"attachShader",
+"linkProgram",
+"useProgram",
+"clearColor",
+"clear",
+"enable",
+"getAttribLocation",
+"vertexAttrib1f",
+"vertexAttrib2f",
+"vertexAttrib3f",
+"vertexAttrib4f",
+"getUniformLocation",
+"uniform1f",
+"uniform2f",
+"uniform3f",
+"uniform4f",
+"createBuffer",
+"bindBuffer",
+"bufferData",
+"vertexAttribPointer",
+"enableVertexAttribArray",
+"drawArrays",
+"drawElements",
+"FRAGMENT_SHADER",
+"VERTEX_SHADER",
+"DEPTH_BUFFER_BIT",
+"COLOR_BUFFER_BIT",
+"SRC_ALPHA",
+"ONE_MINUS_SRC_ALPHA",
+"STATIC_DRAW",
+"ARRAY_BUFFER",
+"ELEMENT_ARRAY_BUFFER",
+"BUFFER_SIZE",
+"BLEND",
+"DEPTH_TEST",
+"BYTE",
+"UNSIGNED_BYTE",
+"SHORT",
+"UNSIGNED_SHORT",
+"INT",
+"UNSIGNED_INT",
+"FLOAT",
+"TEXTURE_2D",
+"TEXTURE_MAG_FILTER",
+"TEXTURE_MIN_FILTER",
+"TEXTURE_WRAP_S",
+"TEXTURE_WRAP_T",
+"NEAREST",
+"LINEAR",
+"RGB",
+"RGBA",
+"REPEAT",
+"CLAMP_TO_EDGE",
+"MIRRORED_REPEAT",
+"UNPACK_FLIP_Y_WEBGL",
+"TEXTURE0",
+"TEXTURE31"
+];
+
+for(i of values){
+  eval("k=" + t.value + "");
+  if(g[k] == g[i]){
+    r.innerHTML += "<span style='color:green'><b>g." + i.padEnd(25) + "</b> <b>==</b>  <b>g." + k.padEnd(8) + "</b> "  + (Number.isInteger(g[i]) ? ("(or <b>" + g[i] + "</b>)") : "") + "<br>";
+  }
+  else {
+    r.innerHTML += "<span style='color:red'><b>g." + i.padEnd(25) + "</b> <b>!=</b>  <b>g." + k.padEnd(8) + "</b> " + (Number.isInteger(g[i]) ? ("(But you can replace it with <b>" + g[i] + "</b>)") : "(You need to use the long form <b>gl." + i + "</b>)") + "<br>";
+  }
+}
+
+}
+
+</script>

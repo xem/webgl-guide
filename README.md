@@ -1,7 +1,7 @@
 WebGL guide
 -----------
 
-I'm reading WebGL Programming Guide and coding every example of the book in a compact, standalone, commented file.
+Demos and resources for my WebGL guide
 
-/book/ = the book's examples
-/me/ = my files
+
+https://xem.github.io/articles/webgl-guide.html
