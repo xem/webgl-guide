@@ -113,8 +113,8 @@ view = function(z){
   gl.enable(gl.DEPTH_TEST);
 
   // Set the camera
-  var cameraMatrix = identity();// perspective({fov: deg2rad(60), ratio: a.width/a.height, near: 0, far: 100});
-  cameraMatrix = transform(cameraMatrix, {y: 0, z: -10, rx: 0, ry: 0, rx: .1});
+  var cameraMatrix = perspective({fov: deg2rad(30), ratio: a.width/a.height, near: 1, far: 100});
+  cameraMatrix = transform(cameraMatrix, {y: 0, z: -5, rx: 0, ry: 0, rx: .1});
 
   // Set the point light color and position
   var lightColor = gl.getUniformLocation(program, 'lightColor');
