@@ -1,0 +1,117 @@
+<canvas id="canvas" width=400 height=400></canvas>
+<script src="../../lib/webgl.js"></script>
+<script src="../../lib/matrix.js"></script>
+<script>
+
+// Convert deg in radians
+deg2rad = angle => Math.PI * angle / 180;
+
+// WebGL canvas context
+var gl = canvas.getContext('webgl');
+
+// Vertex shader
+var vshader = `
+attribute vec4 position;
+attribute vec4 color;
+uniform mat4 camera;
+varying vec4 v_color;
+void main() {
+
+  // Apply the camera matrix to the vertex position
+  gl_Position = camera * position;
+  
+  // Set the varying color
+  v_color = color;
+}`;
+
+// Fragment shader
+var fshader = `
+precision mediump float;
+varying vec4 v_color;
+void main() {
+  gl_FragColor = v_color;
+}`;
+
+// Compile program
+var program = compile(gl, vshader, fshader);
+
+// Create a cube
+var vertices = new Float32Array([  // Vertex coordinates
+   1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0, // front
+   1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,   1.0, 1.0,-1.0, // right
+   1.0, 1.0, 1.0,   1.0, 1.0,-1.0,  -1.0, 1.0,-1.0,  -1.0, 1.0, 1.0, // up
+  -1.0, 1.0, 1.0,  -1.0, 1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0,-1.0, 1.0, // left
+  -1.0,-1.0,-1.0,   1.0,-1.0,-1.0,   1.0,-1.0, 1.0,  -1.0,-1.0, 1.0, // down
+   1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0  // back
+]);
+
+// Set rgba colors for each face's vertices
+var colors = new Float32Array([
+  0.5, 0.5, 1.0, 0.3,   0.5, 0.5, 1.0, 0.3,
+  0.5, 0.5, 1.0, 0.3,   0.5, 0.5, 1.0, 0.3, // front
+  0.5, 1.0, 0.5, 0.3,   0.5, 1.0, 0.5, 0.3,
+  0.5, 1.0, 0.5, 0.3,   0.5, 1.0, 0.5, 0.3, // right
+  1.0, 0.5, 0.5, 0.3,   1.0, 0.5, 0.5, 0.3,
+  1.0, 0.5, 0.5, 0.3,   1.0, 0.5, 0.5, 0.3, // up
+  1.0, 1.0, 0.5, 0.3,   1.0, 1.0, 0.5, 0.3,
+  1.0, 1.0, 0.5, 0.3,   1.0, 1.0, 0.5, 0.3, // left
+  1.0, 1.0, 1.0, 0.3,   1.0, 1.0, 1.0, 0.3,
+  1.0, 1.0, 1.0, 0.3,   1.0, 1.0, 1.0, 0.3, // down
+  0.5, 1.0, 1.0, 0.3,   0.5, 1.0, 1.0, 0.3,
+  0.5, 1.0, 1.0, 0.3,   0.5, 1.0, 1.0, 0.3  // back
+]);
+
+var indices = new Uint8Array([  // Indices
+  0, 1, 2,   0, 2, 3,  // front
+  4, 5, 6,   4, 6, 7,  // right
+  8, 9, 10,  8, 10,11, // up
+  12,13,14,  12,14,15, // left
+  16,17,18,  16,18,19, // down
+  20,21,22,  20,22,23  // back
+]);
+
+var n = 36;
+
+// Set position and color
+buffer(gl, vertices, program, 'position', 3, gl.FLOAT);
+buffer(gl, colors, program, 'color', 4, gl.FLOAT);
+
+// Set indices
+var indexBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+// Set the clear color
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+// Enable alpha blending
+gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+// Set the camera
+var camera = gl.getUniformLocation(program, 'camera');
+var cameraMatrix = perspective({fov: deg2rad(30), aspect: 1, near: 1, far: 100});
+cameraMatrix = transform(cameraMatrix, {z: -5});
+gl.uniformMatrix4fv(camera, false, cameraMatrix);
+
+// Animate / draw
+setInterval(() => {
+  cameraMatrix = transform(cameraMatrix, {rx: .01, ry: .02, rz: .01});
+  gl.uniformMatrix4fv(camera, false, cameraMatrix);
+  
+  // Clear
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  
+  // Draw opaque objects here (if any)
+  // (...)
+  
+  // Disable depth test
+  gl.disable(gl.DEPTH_TEST);
+  
+  // Draw semi-transparent objects here (if any)
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+  
+  // Reenable depth test for next frame
+  gl.enable(gl.DEPTH_TEST);
+}, 16);
+</script>

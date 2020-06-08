@@ -14,7 +14,7 @@
 c='';
 E=CodeMirror.fromTextArea(code,{lineNumbers:true,lineWrapping:true,mode:"htmlmixed"});
 U=z=>{if(c)output.srcdoc=c};
-E.on("keyup",()=>{location.hash=btoa(c=E.getValue());U();})
+E.on("keyup",e=>{location.hash=btoa(c=E.getValue());U();})
 var id = null, url = null;
 onload=()=>{
   if(location.hash){E.setValue(c = atob(location.hash.slice(1)));U();}
@@ -24,7 +24,7 @@ onload=()=>{
       console.log(url);
       page=url.replace(/\?demo=(.*)/,"../$1/index.html");
       output.src=page;
-      fetch(page).then(data=>data.text()).then(txt=>E.setValue(txt.replace(/<script.*?kaspersky.*?script>/g,'')))
+      fetch(page).then(data=>data.text()).then(txt=>E.setValue(txt.replace(/<script.*?kaspersky.*?script>/g,'').replace(/\.\.\/\.\./g,'..')))
     }
   }
 }

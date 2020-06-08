@@ -1,0 +1,62 @@
+<canvas id="canvas" width=400 height=400></canvas>
+<script src="../../lib/webgl.js"></script>
+<script>
+var gl = canvas.getContext('webgl');
+
+// Vertex shader
+var vshader = `
+attribute vec4 position;
+attribute vec2 texCoord;
+varying vec2 v_texCoord;
+void main() {
+  gl_Position = position;
+  v_texCoord = texCoord;
+}`;
+
+// Fragment shader
+var fshader = `
+precision mediump float;
+uniform sampler2D sampler;
+varying vec2 v_texCoord;
+void main() {
+  gl_FragColor = texture2D(sampler, v_texCoord);
+}`;
+
+var program = compile(gl, vshader, fshader);
+var verticesTexCoords = new Float32Array([
+  -0.5, 0.5,  0.0, 1.0,
+  -0.5, -0.5, 0.0, 0.0,
+  0.5,  0.5,  1.0, 1.0,
+  0.5,  -0.5, 1.0, 0.0,
+]);
+var n = 4;
+var FSIZE = verticesTexCoords.BYTES_PER_ELEMENT;
+var vertexTexCoordBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexTexCoordBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, verticesTexCoords, gl.STATIC_DRAW);
+var position = gl.getAttribLocation(program, 'position');
+gl.vertexAttribPointer(position, 2, gl.FLOAT, false, FSIZE * 4, 0);
+gl.enableVertexAttribArray(position);
+var texCoord = gl.getAttribLocation(program, 'texCoord');
+gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, FSIZE * 4, FSIZE * 2);
+gl.enableVertexAttribArray(texCoord);
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+var texture = gl.createTexture();
+var sampler = gl.getUniformLocation(program, 'sampler');
+var image = new Image();
+image.src = './circle.png';
+image.onload = function(){
+
+  // Premultiply alpha (enable texture transparency)
+  gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+  
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+  gl.uniform1i(sampler, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, n);
+};
+</script>

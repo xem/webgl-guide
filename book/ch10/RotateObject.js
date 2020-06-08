@@ -155,8 +155,7 @@ function initEventHandlers(canvas, currentAngle) {
       var factor = 100/canvas.height; // The rotation ratio
       var dx = factor * (x - lastX);
       var dy = factor * (y - lastY);
-      // Limit x-axis rotation angle to -90 to 90 degrees
-      currentAngle[0] = Math.max(Math.min(currentAngle[0] + dy, 90.0), -90.0);
+      currentAngle[0] = currentAngle[0] + dy;
       currentAngle[1] = currentAngle[1] + dx;
     }
     lastX = x, lastY = y;
