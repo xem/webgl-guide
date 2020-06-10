@@ -113,7 +113,7 @@ var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
 draw = e => {
 
   // Set the model matrix
-  var modelMatrix = identity();
+  var modelMatrix = rotation;
   modelMatrix = transform(modelMatrix, {rx: deg2rad(rx), ry: deg2rad(ry)});
   gl.uniformMatrix4fv(model, false, modelMatrix);
 
@@ -138,6 +138,9 @@ var rx = 0;
 var ry = 0;
 var dx = 0;
 var dy = 0;
+var axis = [0,0,0];
+var rotation = identity();
+var deltaRotation;
 
 canvas.onmousedown = e => {
   lastX = e.clientX;
@@ -149,6 +152,7 @@ canvas.onmouseup = e => {
   dragging = false;
 };
 
+
 canvas.onmousemove = e => {
   var x = e.clientX;
   var y = e.clientY;
@@ -158,10 +162,27 @@ canvas.onmousemove = e => {
     // Set angles
     dx = (y - lastY) * 100/canvas.height;
     dy = (x - lastX) * 100/canvas.width;
+
+    // Compute rotation axis (perpendicular to mouse movement)
+    axis[0] = -dy;
+    axis[1] = -dx;
+    axis[2] = 0;
+
+    // Inverse the rotation
+    inverseRotation = inverse(rotation);
     
-    rx += dx;
-    ry += dy;
+    // Apply the inverse rotation to the axis
+    axis[0] = inverseRotation[0]*axis[0] + inverseRotation[4] * axis[1] + inverseRotation[8] * axis[2];
+    axis[1] = inverseRotation[1]*axis[0] + inverseRotation[5] * axis[1] + inverseRotation[9] * axis[2];
+    axis[2] = inverseRotation[2]*axis[0] + inverseRotation[6] * axis[1] + inverseRotation[10] * axis[2];
     
+    // deltaRotation: rotation matrix along the axis
+    deltaRotation = fromRotation(axis, Math.hypot(dx, dy)/100);
+
+    // rotation: rotation * deltaRotation
+    console.log(rotation, axis, deltaRotation);
+    rotation = multMat4Mat4(rotation, deltaRotation);
+
     // Remember mouse position
     lastX = x;
     lastY = y;
