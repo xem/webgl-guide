@@ -152,6 +152,18 @@ canvas.onmouseup = e => {
   dragging = false;
 };
 
+function transformMat4(out, a, m) {
+  let x = a[0],
+    y = a[1],
+    z = a[2];
+  let w = m[3] * x + m[7] * y + m[11] * z + m[15];
+  w = w || 1.0;
+  
+  out[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
+  out[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
+  out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
+  return out;
+}
 
 canvas.onmousemove = e => {
   var x = e.clientX;
@@ -164,17 +176,15 @@ canvas.onmousemove = e => {
     dy = (x - lastX) * 100/canvas.width;
 
     // Compute rotation axis (perpendicular to mouse movement)
-    axis[0] = -dy;
-    axis[1] = -dx;
+    axis[0] = dx;
+    axis[1] = dy;
     axis[2] = 0;
 
     // Inverse the rotation
     inverseRotation = inverse(rotation);
     
-    // Apply the inverse rotation to the axis
-    axis[0] = inverseRotation[0]*axis[0] + inverseRotation[4] * axis[1] + inverseRotation[8] * axis[2];
-    axis[1] = inverseRotation[1]*axis[0] + inverseRotation[5] * axis[1] + inverseRotation[9] * axis[2];
-    axis[2] = inverseRotation[2]*axis[0] + inverseRotation[6] * axis[1] + inverseRotation[10] * axis[2];
+    transformMat4(axis, axis, inverseRotation);
+    
     
     // deltaRotation: rotation matrix along the axis
     deltaRotation = fromRotation(axis, Math.hypot(dx, dy)/100);
