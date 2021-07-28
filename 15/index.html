@@ -3,13 +3,10 @@
 <script src="../lib/matrix.js"></script>
 <script src="../lib/shapes.js"></script>
 <script>
-
-// Convert deg in radians
-deg2rad = angle => Math.PI * angle / 180;
-
 // WebGL canvas context
 var gl = canvas.getContext('webgl');
 
+// Vertex shader
 var vshader = `
 attribute vec4 position; 
 attribute vec4 color;
@@ -35,7 +32,7 @@ void main() {
   v_color = color;
 }`;
 
-// Fragment shader program
+// Fragment shader
 var fshader = `
 precision mediump float;
 uniform vec3 lightColor;
@@ -90,15 +87,15 @@ gl.clearColor(0, 0, 0, 1);
 gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
-var cameraMatrix = perspective({fov: deg2rad(30), aspect: 1, near: 1, far: 100});
-cameraMatrix = transform(cameraMatrix, {z: -10});
+var cameraMatrix = perspective({fov: 30, aspect: 1, near: 1, far: 100});
+cameraMatrix.translateSelf(0, 0, -12);
 
 // Set the point light color and position
 var lightColor = gl.getUniformLocation(program, 'lightColor');
 gl.uniform3f(lightColor, 1, 1, 1);
 
 var lightPosition = gl.getUniformLocation(program, 'lightPosition');
-gl.uniform3f(lightPosition, 1.5, 1.5, 1.5);
+gl.uniform3f(lightPosition, 0, 0, 2.5);
 
 // Set the ambient light color
 var ambientLight = gl.getUniformLocation(program, 'ambientLight');
@@ -107,68 +104,35 @@ gl.uniform3f(ambientLight, 0.3, 0.3, 0.3);
 // Clear
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+// Render a cube
+renderCube = (tx, ty, tz, sx, sy, sz) => {
+  // Set the model matrix
+  var modelMatrix = new DOMMatrix();
+  modelMatrix.translateSelf(tx, ty, tz).rotateSelf(30, 0, 0).rotateSelf(0, 30, 0).scaleSelf(sx, sy, sz)
+  var model = gl.getUniformLocation(program, 'model');
+  gl.uniformMatrix4fv(model, false, modelMatrix.toFloat32Array());
+
+  // Set the cube's mvp matrix (camera x model)
+  var mvpMatrix = (new DOMMatrix(modelMatrix)).preMultiplySelf(cameraMatrix);
+  var mvp = gl.getUniformLocation(program, 'mvp');
+  gl.uniformMatrix4fv(mvp, false, mvpMatrix.toFloat32Array());
+
+  // Set the inverse transpose of the model matrix
+  var inverseTransposeMatrix = transpose((new DOMMatrix(modelMatrix)).invertSelf());
+  var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
+  gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix.toFloat32Array());
+
+  // Render
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
+}
+
 // Cube 1
-
-// Set the model matrix
-var modelMatrix = identity();
-modelMatrix = transform(modelMatrix, {rx: .5, ry: .8});
-var model = gl.getUniformLocation(program, 'model');
-gl.uniformMatrix4fv(model, false, modelMatrix);
-
-// Set the cube's mvp matrix (camera x model)
-var mvpMatrix = multMat4Mat4(cameraMatrix, modelMatrix);
-var mvp = gl.getUniformLocation(program, 'mvp');
-gl.uniformMatrix4fv(mvp, false, mvpMatrix);
-
-// Set the inverse transpose of the model matrix
-var inverseTransposeMatrix = transpose(inverse(modelMatrix));
-var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
-gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix);
-
-// Render
-gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
-
+renderCube(-4, 0, 0, 1, 1, 3);
 
 // Cube 2
-
-// Set the model matrix
-var modelMatrix = identity();
-modelMatrix = transform(modelMatrix, {x: 4, rx: .5, ry: .8, sx: 3, sy: .5});
-var model = gl.getUniformLocation(program, 'model');
-gl.uniformMatrix4fv(model, false, modelMatrix);
-
-// Set the cube's mvp matrix (camera x model)
-var mvpMatrix = multMat4Mat4(cameraMatrix, modelMatrix);
-var mvp = gl.getUniformLocation(program, 'mvp');
-gl.uniformMatrix4fv(mvp, false, mvpMatrix);
-
-// Set the inverse transpose of the model matrix
-var inverseTransposeMatrix = transpose(inverse(modelMatrix));
-var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
-gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix);
-
-// Render
-gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
-
+renderCube(0, 0, 0, 1, 1, 1);
 
 // Cube 3
+renderCube(4, 0, 0, 1, 3, 1);
 
-// Set the model matrix
-var modelMatrix = identity();
-modelMatrix = transform(modelMatrix, {x: -3, rx: .5, ry: .8, sy: 3, sz: .5});
-var model = gl.getUniformLocation(program, 'model');
-gl.uniformMatrix4fv(model, false, modelMatrix);
-
-// Set the cube's mvp matrix (camera x model)
-var mvpMatrix = multMat4Mat4(cameraMatrix, modelMatrix);
-var mvp = gl.getUniformLocation(program, 'mvp');
-gl.uniformMatrix4fv(mvp, false, mvpMatrix);
-
-// Set the inverse transpose of the model matrix
-var inverseTransposeMatrix = transpose(inverse(modelMatrix));
-var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
-gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix);
-
-// Render
-gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
 </script>

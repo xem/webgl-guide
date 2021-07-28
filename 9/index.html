@@ -2,10 +2,6 @@
 <script src="../lib/webgl.js"></script>
 <script src="../lib/matrix.js"></script>
 <script>
-
-// Convert deg in radians
-deg2rad = angle => Math.PI * angle / 180;
-
 // WebGL canvas context
 var gl = canvas.getContext('webgl');
 
@@ -80,14 +76,13 @@ gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
 var camera = gl.getUniformLocation(program, 'camera');
-var cameraMatrix = perspective({fov: deg2rad(30), aspect: 1, near: 1, far: 100});
-cameraMatrix = transform(cameraMatrix, {z: -5});
-gl.uniformMatrix4fv(camera, false, cameraMatrix);
+var cameraMatrix = perspective({fov: 30, aspect: 1, near: 1, far: 100});
+cameraMatrix.translateSelf(0, 0, -5);
 
 // Animate
 setInterval(() => {
-  cameraMatrix = transform(cameraMatrix, {rx: .01, ry: .02, rz: .01});
-  gl.uniformMatrix4fv(camera, false, cameraMatrix);
+  cameraMatrix.rotateSelf(.4, .8, .4);
+  gl.uniformMatrix4fv(camera, false, cameraMatrix.toFloat32Array());
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }, 16);

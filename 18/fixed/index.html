@@ -3,13 +3,10 @@
 <script src="../../lib/matrix.js"></script>
 <script src="../../lib/shapes.js"></script>
 <script>
-
-// Convert deg in radians
-deg2rad = angle => Math.PI * angle / 180;
-
 // WebGL canvas context
 var gl = canvas.getContext('webgl');
 
+// Vertex shader
 var vshader = `
 attribute vec4 position; 
 attribute vec4 color;
@@ -35,7 +32,7 @@ void main() {
   v_color = color;
 }`;
 
-// Fragment shader program
+// Fragment shader
 var fshader = `
 precision mediump float;
 uniform vec3 lightColor;
@@ -90,8 +87,8 @@ gl.clearColor(0, 0, 0, 1);
 gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
-var cameraMatrix = perspective({fov: deg2rad(30), aspect: 1, near: 1, far: 100});
-cameraMatrix = transform(cameraMatrix, {z: -5, rx: 0, ry: 0});
+var cameraMatrix = perspective({fov: 30, aspect: 1, near: 1, far: 100});
+cameraMatrix.translateSelf(0, 0, -5);
 
 // Set the point light color and position
 var lightColor = gl.getUniformLocation(program, 'lightColor');
@@ -113,15 +110,15 @@ var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
 draw = e => {
 
   // Set the model matrix
-  gl.uniformMatrix4fv(model, false, modelMatrix);
+  gl.uniformMatrix4fv(model, false, modelMatrix.toFloat32Array());
 
   // Set the cube's mvp matrix (camera x model)
-  var mvpMatrix = multMat4Mat4(cameraMatrix, modelMatrix);
-  gl.uniformMatrix4fv(mvp, false, mvpMatrix);
+  var mvpMatrix = (new DOMMatrix(modelMatrix)).preMultiplySelf(cameraMatrix);
+  gl.uniformMatrix4fv(mvp, false, mvpMatrix.toFloat32Array());
 
   // Set the inverse transpose of the model matrix
-  var inverseTransposeMatrix = transpose(inverse(modelMatrix));
-  gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix);
+  var inverseTransposeMatrix = transpose((new DOMMatrix(modelMatrix)).invertSelf());
+  gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix.toFloat32Array());
 
   // Render
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -137,7 +134,7 @@ var ry = 0;
 var dx = 0;
 var dy = 0;
 var axis = [0,0,0];
-var modelMatrix = identity();
+var modelMatrix = new DOMMatrix();
 var deltaRotation;
 
 canvas.onmousedown = e => {
@@ -157,8 +154,10 @@ canvas.onmousemove = e => {
   if(dragging){
     
     // Set angles
-    dx = (y - lastY) * 100/canvas.height;
-    dy = (x - lastX) * 100/canvas.width;
+    dx = (y - lastY) * 100 / canvas.height;
+    dy = (x - lastX) * 100 / canvas.width;
+    
+    console.log(dx, dy);
 
     // Compute rotation axis (perpendicular to mouse movement)
     axis[0] = dx;
@@ -166,17 +165,17 @@ canvas.onmousemove = e => {
     axis[2] = 0;
 
     // Inverse the rotation that has been done so far
-    inverseRotation = inverse(modelMatrix);
+    inverseRotation = (new DOMMatrix(modelMatrix)).invertSelf();
     
     // Apply the inverse rotation to the rotation axis
-    axis = transformMat4(axis, inverseRotation);
+    axis = axisTransformMatrix(axis, inverseRotation);
     
     // Compute the new rotation matrix "deltaRotation" along the axis
-    deltaRotation = fromRotation(axis, Math.hypot(dx, dy)/100);
+    deltaRotation = fromRotation(axis, Math.hypot(dx, dy) / 100);
 
     // Compute the rotation: rotation * deltaRotation
     if(deltaRotation){
-      modelMatrix = multMat4Mat4(modelMatrix, deltaRotation);
+      modelMatrix.preMultiplySelf(deltaRotation);
     }
     
     // Remember mouse position

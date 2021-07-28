@@ -3,10 +3,6 @@
 <script src="../lib/matrix.js"></script>
 <script src="../lib/shapes.js"></script>
 <script>
-
-// Convert deg in radians
-deg2rad = angle => Math.PI * angle / 180;
-
 // WebGL canvas context
 var gl = canvas.getContext('webgl');
 
@@ -32,7 +28,7 @@ void main() {
   v_color = color;
 }`;
 
-// Fragment shader program
+// Fragment shader
 var fshader = `
 precision mediump float;
 uniform mat4 camera;
@@ -53,8 +49,8 @@ void main() {
     specular = pow(max(dot(reflectVec, viewVec), 0.0), 120.0);
   }
   
-  gl_FragColor.rgb = vec3(0.1, 0.1, 0.1)     // ambient
-                   + vec3(0.4, 0.0, 0.0) * d // diffuse
+  gl_FragColor.rgb = vec3(0.4, 0.0, 0.0)     // ambient
+                   + vec3(0.2, 0.2, 0.2) * d // diffuse + spot
                    + specular;               // specular
   gl_FragColor.a = 1.0;
 }`;
@@ -86,14 +82,13 @@ gl.vertexAttrib3f(color, 1, 0, 0);
 gl.clearColor(0, 0, 0, 1);
 gl.enable(gl.DEPTH_TEST);
 
-
 // Set perspective
 var perspectiveLocation = gl.getUniformLocation(program, 'perspective');
-gl.uniformMatrix4fv(perspectiveLocation, false, perspective({fov: deg2rad(30), ratio: 1, near: 1, far: 100}));
+gl.uniformMatrix4fv(perspectiveLocation, false, perspective({fov: 30, ratio: 1, near: 1, far: 100}).toFloat32Array());
 
 // Set camera
 var cameraLocation = gl.getUniformLocation(program, 'camera');
-gl.uniformMatrix4fv(cameraLocation, false, transform(identity(), {z: -5, ry: -.3}));
+gl.uniformMatrix4fv(cameraLocation, false, (new DOMMatrix).translateSelf(0, 0, -3.5).rotateSelf(0, -30, 0).toFloat32Array());
 
 // Set light color
 var color = gl.getAttribLocation(program, 'color');

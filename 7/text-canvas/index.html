@@ -1,6 +1,17 @@
 <canvas id="canvas" width=400 height=400></canvas>
-<script src="../lib/webgl.js"></script>
+<canvas id="canvas2d" width=256 height=256 hidden></canvas>
+<script src="../../lib/webgl.js"></script>
 <script>
+// 2D canvas context
+var ctx = canvas2d.getContext("2d");
+
+// Render text
+ctx.fillStyle = "#fff";
+ctx.fillRect(0,0,256,256);
+ctx.fillStyle = "#00F";
+ctx.font = "30px Arial";
+ctx.fillText("Hello WebGL", 30, 200);
+
 // WebGL canvas context
 var gl = canvas.getContext('webgl');
 
@@ -29,10 +40,10 @@ var program = compile(gl, vshader, fshader);
 // Interleaved data buffer (X,Y: vertex coordinates, U,V: texture coordinates)
 // Texture coordinates are also sometimes called S and T
 var verticesTexCoords = new Float32Array([
-  -0.5, 0.5,  0.0, 1.0,
-  -0.5, -0.5, 0.0, 0.0,
-  0.5,  0.5,  1.0, 1.0,
-  0.5,  -0.5, 1.0, 0.0,
+  0.4,  0.6,  1.0, 1.0,
+  0.6,  -0.4, 1.0, 0.0,
+  -0.6, 0.4,  0.0, 1.0,
+  -0.6, -0.6, 0.0, 0.0,
 ]);
 
 var n = 4; // vertices (4)
@@ -56,32 +67,20 @@ gl.enableVertexAttribArray(texCoord);
 // Set the clear color
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-// Set a 2D texture
-var texture = gl.createTexture();
+// Set a 2D texture (text)
 var sampler = gl.getUniformLocation(program, 'sampler');
-var image = new Image();
-image.src = './sky.jpg'; // URL or path relative to the HTML file 
-image.onload = function(){
+var texture = gl.createTexture();
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+gl.bindTexture(gl.TEXTURE_2D, texture);
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas2d);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+gl.generateMipmap(gl.TEXTURE_2D);
+gl.bindTexture(gl.TEXTURE_2D, null);    
+gl.activeTexture(gl.TEXTURE0);
+gl.bindTexture(gl.TEXTURE_2D, texture);
+gl.uniform1i(sampler, 0);
+gl.clear(gl.COLOR_BUFFER_BIT);   // Clear canvas
+gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the quad
 
-  // Flip the image's y axis
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
-
-  // Enable texture 0
-  gl.activeTexture(gl.TEXTURE0);
-
-  // Set the texture's target (2D or cubemap)
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-
-  // Stretch/wrap options
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  
-  // Bind image to texture
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-  
-  // Pass texture 0 to the sampler
-  gl.uniform1i(sampler, 0);
-  
-  gl.clear(gl.COLOR_BUFFER_BIT);   // Clear canvas
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the quad
-};
 </script>
