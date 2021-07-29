@@ -32,7 +32,7 @@ void main() {
   v_color = color;
 }`;
 
-// Fragment shader
+// Fragment shader program
 var fshader = `
 precision mediump float;
 uniform vec3 lightColor;
@@ -106,6 +106,18 @@ var model = gl.getUniformLocation(program, 'model');
 var mvp = gl.getUniformLocation(program, 'mvp');
 var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
 
+// Handle mouse events
+var dragging = false;
+var lastX = -1;
+var lastY = 0;
+var rx = 0;
+var ry = 0;
+var dx = 0;
+var dy = 0;
+var axis = [0, 0, 0];
+var modelMatrix = new DOMMatrix();
+var deltaRotation;
+
 // Draw
 draw = e => {
 
@@ -117,7 +129,7 @@ draw = e => {
   gl.uniformMatrix4fv(mvp, false, mvpMatrix.toFloat32Array());
 
   // Set the inverse transpose of the model matrix
-  var inverseTransposeMatrix = transpose((new DOMMatrix(modelMatrix)).invertSelf());
+  var inverseTransposeMatrix = transpose(new DOMMatrix(modelMatrix).invertSelf());
   gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix.toFloat32Array());
 
   // Render
@@ -125,18 +137,7 @@ draw = e => {
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
 }
 
-// Handle mouse events
-var dragging = false;
-var lastX = -1;
-var lastY = 0;
-var rx = 0;
-var ry = 0;
-var dx = 0;
-var dy = 0;
-var axis = [0,0,0];
-var modelMatrix = new DOMMatrix();
-var deltaRotation;
-
+// Mouse events
 canvas.onmousedown = e => {
   lastX = e.clientX;
   lastY = e.clientY;
@@ -156,8 +157,6 @@ canvas.onmousemove = e => {
     // Set angles
     dx = (y - lastY) * 100 / canvas.height;
     dy = (x - lastX) * 100 / canvas.width;
-    
-    console.log(dx, dy);
 
     // Compute rotation axis (perpendicular to mouse movement)
     axis[0] = dx;
@@ -175,7 +174,7 @@ canvas.onmousemove = e => {
 
     // Compute the rotation: rotation * deltaRotation
     if(deltaRotation){
-      modelMatrix.preMultiplySelf(deltaRotation);
+      modelMatrix.multiplySelf(deltaRotation);
     }
     
     // Remember mouse position
