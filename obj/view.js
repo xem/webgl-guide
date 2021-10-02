@@ -113,8 +113,8 @@ view = function(z){
   gl.enable(gl.DEPTH_TEST);
 
   // Set the camera
-  var cameraMatrix = perspective({fov: deg2rad(30), ratio: a.width/a.height, near: 1, far: 100});
-  cameraMatrix = transform(cameraMatrix, {y: 0, z: -5, rx: 0, ry: 0, rx: .1});
+  var cameraMatrix = perspective({fov: deg2rad(30), ratio: a.width/a.height, near: 1, far: 1000});
+  cameraMatrix.translateSelf(0, 0, -200).rotateSelf(0, 0, .1);
 
   // Set the point light color and position
   var lightColor = gl.getUniformLocation(program, 'lightColor');
@@ -137,20 +137,23 @@ view = function(z){
   // Loop
   setInterval(() => {
     
-    cubeAngle += .015;
+    cubeAngle += 1;
     
     // Set the model matrix
-    var modelMatrix = identity();
-    modelMatrix = transform(modelMatrix, {ry: cubeAngle});
-    gl.uniformMatrix4fv(model, false, modelMatrix);
+    var modelMatrix = new DOMMatrix();
+    modelMatrix.rotateSelf(0, cubeAngle, 0);
+    console.log(modelMatrix);
+    gl.uniformMatrix4fv(model, false, modelMatrix.toFloat32Array());
     
     // Set the cube's mvp matrix (camera x model)
-    var mvpMatrix = multMat4Mat4(cameraMatrix, modelMatrix);
-    gl.uniformMatrix4fv(mvp, false, mvpMatrix);
-    
+    var mvpMatrix = (new DOMMatrix(modelMatrix)).preMultiplySelf(cameraMatrix);
+    var mvp = gl.getUniformLocation(program, 'mvp');
+    gl.uniformMatrix4fv(mvp, false, mvpMatrix.toFloat32Array());
+
     // Set the inverse transpose of the model matrix
-    var inverseTransposeMatrix = transpose(inverse(modelMatrix));
-    gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix);
+    var inverseTransposeMatrix = transpose((new DOMMatrix(modelMatrix)).invertSelf());
+    var inverseTranspose = gl.getUniformLocation(program, 'inverseTranspose');
+    gl.uniformMatrix4fv(inverseTranspose, false, inverseTransposeMatrix.toFloat32Array());
 
     // Render
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
